@@ -16,7 +16,7 @@
 #define MQTT_CONTROL_HANDLER_H
 
 #include <Arduino.h>
-#include "../vendor/ArduinoJson/ArduinoJson.h"  // ArduinoJson API from vendored copy (namespace ZenoJson; see vendor/ArduinoJson/LICENSE.md)
+#include "../ZenoJson.h"  // ArduinoJson API from vendored copy (namespace ZenoJson; see vendor/ArduinoJson/LICENSE.md)
 #include <vector>
 #include <functional>
 #include "../storage/DataMonitorConfig.h"

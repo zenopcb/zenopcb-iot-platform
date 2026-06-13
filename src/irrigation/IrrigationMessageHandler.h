@@ -2,7 +2,7 @@
 #define ZENOPCB_IRRIGATION_MESSAGE_HANDLER_H
 
 #include <Arduino.h>
-#include "../vendor/ArduinoJson/ArduinoJson.h"  // ArduinoJson API from vendored copy (namespace ZenoJson; see vendor/ArduinoJson/LICENSE.md)
+#include "../ZenoJson.h"  // ArduinoJson API from vendored copy (namespace ZenoJson; see vendor/ArduinoJson/LICENSE.md)
 #include <functional>
 #include "IrrigationTypes.h"
 

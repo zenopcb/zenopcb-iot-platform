@@ -12,7 +12,7 @@
 // Storage consumers that use static-pointer HAL injection (Plan 04-05 wiring).
 #include "schedule/ScheduleStorage.h"
 #include "storage/LittleFSManager.h"
-#include "vendor/ArduinoJson/ArduinoJson.h"  // ArduinoJson API from vendored copy (namespace ZenoJson; see vendor/ArduinoJson/LICENSE.md)
+#include "ZenoJson.h"  // ArduinoJson API from vendored copy (namespace ZenoJson; see ZenoJson/LICENSE.md)
 
 namespace ZenoPCB
 {

@@ -3,7 +3,7 @@
 
 #include "ModbusDataBuffer.h"
 #include "../core/ZenoPCBDebug.h"
-#include "../vendor/ArduinoJson/ArduinoJson.h"  // ArduinoJson API from vendored copy (namespace ZenoJson; see vendor/ArduinoJson/LICENSE.md)
+#include "../ZenoJson.h"  // ArduinoJson API from vendored copy (namespace ZenoJson; see vendor/ArduinoJson/LICENSE.md)
 
 static const char *TAG = "ModbusDataBuffer";
 

@@ -11,7 +11,7 @@
 // Original ArduinoJson library: Copyright (c) Benoit Blanchon. MIT.
 // See lib/ZenoPCB/src/vendor/ArduinoJson/LICENSE.md
 
-#include "../vendor/ArduinoJson/ArduinoJson.h"
+#include "../ZenoJson.h"
 
 namespace ZenoPCB {
 namespace Json {

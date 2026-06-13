@@ -18,7 +18,7 @@
 #elif defined(STM32F1) || defined(STM32F4)
   #include "../hal/stm32/Stm32Hal.h"
 #endif
-#include "../vendor/ArduinoJson/ArduinoJson.h"  // ArduinoJson API from vendored copy (namespace ZenoJson; see vendor/ArduinoJson/LICENSE.md)
+#include "../ZenoJson.h"  // ArduinoJson API from vendored copy (namespace ZenoJson; see vendor/ArduinoJson/LICENSE.md)
 #include <map>
 #include <algorithm>
 
