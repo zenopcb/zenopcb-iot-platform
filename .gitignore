@@ -35,6 +35,9 @@ Thumbs.db
 doc/
 *.local.md
 
+# Claude Code per-project settings — local only, không lên git
+.claude/
+
 # macOS Finder duplicates
 * copy.*
 * copy 2.*
