@@ -1,0 +1,33 @@
+#include "Esp8266Hal.h"
+
+#if defined(ESP8266)
+
+namespace ZenoPCB {
+
+// Pitfall 7 — Meyers singleton. Lazy, thread-safe in C++11+, and lives
+// as a single symbol in this translation unit so the instance is shared
+// across every consumer that includes Esp8266Hal.h. Crucially, the static
+// is FUNCTION-local, not file-scope, so no constructor runs before
+// main() / setup() and no static-init-order fiasco can occur.
+//
+// Capabilities sanity check (compile-time): the bitmask returned by
+// Esp8266Hal::capabilities() must equal CAP_FS_FILES | CAP_OTA | CAP_NVS |
+// CAP_NTP | CAP_WATCHDOG | CAP_CAPTIVE_PORTAL (Phase 7 Plan 07-06 extended
+// Esp8266Hal with the captive-portal bit so Pattern G fallible
+// wifiProvisioning() proceeds to delegation on ESP8266). This is enforced
+// inline in the header impl; the static_assert below double-anchors that
+// to the call-site so a future edit cannot silently desync the two
+// surfaces.
+static_assert(
+    (IZenoHal::CAP_FS_FILES | IZenoHal::CAP_OTA | IZenoHal::CAP_NVS |
+     IZenoHal::CAP_NTP | IZenoHal::CAP_WATCHDOG | IZenoHal::CAP_CAPTIVE_PORTAL) == 0x3Fu,
+    "ESP8266 capability bitmask must equal 0x3F (6 bits including CAP_CAPTIVE_PORTAL)");
+
+IZenoHal& getEsp8266Hal() {
+    static Esp8266Hal instance;
+    return instance;
+}
+
+}  // namespace ZenoPCB
+
+#endif  // defined(ESP8266)

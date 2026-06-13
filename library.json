@@ -1,0 +1,50 @@
+{
+  "name": "ZenoPCB",
+  "version": "0.3.0",
+  "description": "Fluent IoT library for ESP32, ESP8266, UNO R4 WiFi and STM32. WiFi captive-portal provisioning, MQTT (optional TLS), HTTP OTA, Modbus RTU/TCP, Z-Keys telemetry/control, edge alarms, schedules, irrigation and diagnostics — single-include, no external dependencies (ArduinoJson, PubSubClient, TinyGSM, Preferences, FlashStorage, StreamDebugger are vendored).",
+  "keywords": "iot, esp32, esp8266, uno-r4, stm32, mqtt, wifi, provisioning, captive-portal, ota, modbus, alarm, schedule, irrigation, diagnostics, z-key, zenopcb",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zenopcb/zenopcb-iot-platform"
+  },
+  "authors": [
+    {
+      "name": "ZENOPCB ELECTRONICS TECHNOLOGY CO., LTD",
+      "email": "infor@zenopcb.vn",
+      "url": "https://zenopcb.vn",
+      "maintainer": true
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://zenopcb.vn",
+  "frameworks": "arduino",
+  "platforms": [
+    "espressif32",
+    "espressif8266",
+    "renesas-ra",
+    "ststm32"
+  ],
+  "dependencies": [],
+  "headers": [
+    "ZenoPCB.h",
+    "ZenoPCBMain.h"
+  ],
+  "examples": [
+    "examples/*/*/*.ino"
+  ],
+  "export": {
+    "include": [
+      "src",
+      "examples",
+      "library.properties",
+      "library.json",
+      "README.md",
+      "LICENSE",
+      "keywords.txt"
+    ],
+    "exclude": [
+      "**/*.DS_Store",
+      "**/* copy.*"
+    ]
+  }
+}

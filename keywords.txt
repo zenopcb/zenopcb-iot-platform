@@ -1,0 +1,212 @@
+#######################################
+# Syntax Coloring Map For ZenoPCB
+#######################################
+# Format rules (Arduino IDE):
+#   - Columns MUST be separated by a TAB, not spaces.
+#   - KEYWORD1  -> classes / datatypes        (orange, bold)
+#   - KEYWORD2  -> methods / functions        (orange)
+#   - KEYWORD3  -> structures (setup/loop)    (orange)
+#   - LITERAL1  -> constants                  (blue)
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+ZenoPCB	KEYWORD1
+Zeno	KEYWORD1
+ZenoState	KEYWORD1
+ZenoCapability	KEYWORD1
+ZKey	KEYWORD1
+ZValue	KEYWORD1
+ZValueType	KEYWORD1
+DeviceType	KEYWORD1
+DeviceInfo	KEYWORD1
+DeviceConfig	KEYWORD1
+ConnectionType	KEYWORD1
+ConnectionFlags	KEYWORD1
+ConnectionConfig	KEYWORD1
+ConnectionProtocol	KEYWORD1
+DataMonitorConfig	KEYWORD1
+ScheduleConfig	KEYWORD1
+ScheduleType	KEYWORD1
+ScheduleAction	KEYWORD1
+ExecutionStatus	KEYWORD1
+AlarmRule	KEYWORD1
+AlarmEvent	KEYWORD1
+AlarmCondition	KEYWORD1
+AlarmSeverity	KEYWORD1
+DiagnosticsData	KEYWORD1
+DiagnosticsConfig	KEYWORD1
+DiagnosticsConnectionType	KEYWORD1
+OTAError	KEYWORD1
+IrrigationStep	KEYWORD1
+IrrigationExecution	KEYWORD1
+IrrigationScenarioConfig	KEYWORD1
+IrrigationScheduleConfig	KEYWORD1
+IrrigationAction	KEYWORD1
+IrrigationStatus	KEYWORD1
+RegisterType	KEYWORD1
+ZenoNetworkProvider	KEYWORD1
+ZenoEthernetProvider	KEYWORD1
+Zeno4GProvider	KEYWORD1
+ZenoMultiConnectProvider	KEYWORD1
+ZenoPCBMQTT	KEYWORD1
+IZenoHal	KEYWORD1
+DeviceCredentials	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+# Lifecycle
+begin	KEYWORD2
+loop	KEYWORD2
+reconnect	KEYWORD2
+factoryReset	KEYWORD2
+startAPMode	KEYWORD2
+stopAPMode	KEYWORD2
+
+# WiFi / network
+wifi	KEYWORD2
+wifiProvisioning	KEYWORD2
+apPrefix	KEYWORD2
+apPassword	KEYWORD2
+apTimeout	KEYWORD2
+setNetworkProvider	KEYWORD2
+statusLED	KEYWORD2
+
+# Device
+device	KEYWORD2
+deviceName	KEYWORD2
+deviceInfo	KEYWORD2
+setDeviceCredentials	KEYWORD2
+
+# MQTT
+mqtt	KEYWORD2
+mqttTLS	KEYWORD2
+enableTLS	KEYWORD2
+setRootCA	KEYWORD2
+mqttCredentials	KEYWORD2
+getMQTT	KEYWORD2
+onMqttConnected	KEYWORD2
+onMqttMessage	KEYWORD2
+
+# Connection / data-monitor storage
+enableStorage	KEYWORD2
+onConfigCreated	KEYWORD2
+onConfigUpdated	KEYWORD2
+onConfigDeleted	KEYWORD2
+getConnectionConfig	KEYWORD2
+getAllConnectionConfigIds	KEYWORD2
+enableDataMonitorStorage	KEYWORD2
+onDataMonitorCreated	KEYWORD2
+onDataMonitorUpdated	KEYWORD2
+onDataMonitorDeleted	KEYWORD2
+onDataMonitorToggled	KEYWORD2
+getDataMonitorConfig	KEYWORD2
+getAllDataMonitorIds	KEYWORD2
+getDataMonitorsByConnection	KEYWORD2
+
+# Schedule
+enableSchedule	KEYWORD2
+onScheduleExecuted	KEYWORD2
+onScheduleError	KEYWORD2
+onScheduleCreated	KEYWORD2
+onScheduleUpdated	KEYWORD2
+onScheduleDeleted	KEYWORD2
+onScheduleSynced	KEYWORD2
+getScheduleCount	KEYWORD2
+isMaxSchedulesReached	KEYWORD2
+
+# Irrigation
+enableIrrigation	KEYWORD2
+setIrrigationWriteFunction	KEYWORD2
+onIrrigationStepProgress	KEYWORD2
+onIrrigationCompleted	KEYWORD2
+onIrrigationError	KEYWORD2
+
+# Alarm
+enableAlarm	KEYWORD2
+onAlarmTriggered	KEYWORD2
+onAlarmConfigReceived	KEYWORD2
+getAlarmRuleCount	KEYWORD2
+
+# OTA
+enableOTA	KEYWORD2
+ota	KEYWORD2
+onOTAProgress	KEYWORD2
+onOTAComplete	KEYWORD2
+onOTAError	KEYWORD2
+canOTARollBack	KEYWORD2
+isOTAInProgress	KEYWORD2
+
+# Diagnostics
+enableDiagnostics	KEYWORD2
+setConnectionType	KEYWORD2
+setDiagnosticsInterval	KEYWORD2
+enablePassiveDiagnostics	KEYWORD2
+setDiagnosticsMaxRetries	KEYWORD2
+onDiagnosticsRequest	KEYWORD2
+sendDiagnosticsNow	KEYWORD2
+
+# Z-Keys
+enableZKeys	KEYWORD2
+set	KEYWORD2
+get	KEYWORD2
+getInt	KEYWORD2
+getFloat	KEYWORD2
+getString	KEYWORD2
+getBool	KEYWORD2
+onZKeyChange	KEYWORD2
+onAnyZKeyChange	KEYWORD2
+onZKeyRead	KEYWORD2
+setZPublishInterval	KEYWORD2
+setModbusTelemetryInterval	KEYWORD2
+setZInstantPublish	KEYWORD2
+
+# Time
+isTimeSynced	KEYWORD2
+getUTC	KEYWORD2
+
+# Status / lifecycle callbacks
+onConnected	KEYWORD2
+onDisconnected	KEYWORD2
+onConfigured	KEYWORD2
+onError	KEYWORD2
+onStateChange	KEYWORD2
+isConnected	KEYWORD2
+isConfigured	KEYWORD2
+isAPMode	KEYWORD2
+getState	KEYWORD2
+getActualConnectionType	KEYWORD2
+getAPSSID	KEYWORD2
+getIP	KEYWORD2
+getConfig	KEYWORD2
+getConnectionCount	KEYWORD2
+getDataMonitorCount	KEYWORD2
+
+# Macros (from ZenoPCBMain.h)
+ZENO_WRITE	KEYWORD2
+ZENO_READ	KEYWORD2
+ZENO_READ_ALL	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+# Connection flags
+CONN_WIFI	LITERAL1
+CONN_ETHERNET	LITERAL1
+CONN_CELLULAR	LITERAL1
+
+# Build-time feature flags
+ZENOPCB_ENABLE_TLS	LITERAL1
+ZENOPCB_ENABLE_ETHERNET	LITERAL1
+ZENOPCB_ENABLE_CELLULAR	LITERAL1
+ZENOPCB_DEFAULT_HAL	LITERAL1
+
+# Z-Key range (Z0..Z254) — sample entries; add the rest as needed
+Z0	LITERAL1
+Z1	LITERAL1
+Z2	LITERAL1
+Z3	LITERAL1
+Z4	LITERAL1
+Z5	LITERAL1

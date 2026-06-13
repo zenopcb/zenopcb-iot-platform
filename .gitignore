@@ -1,0 +1,40 @@
+# Arduino build artifacts
+build/
+*.hex
+*.elf
+*.bin
+*.eep
+*.lst
+*.map
+*.o
+*.d
+*.a
+
+# arduino-cli
+.cache/
+.build/
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+.vscode/.browse.c_cpp.db*
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/ipch/
+
+# IDE / OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+*.iml
+
+# Internal / private notes — không public
+doc/
+*.local.md
+
+# macOS Finder duplicates
+* copy.*
+* copy 2.*
