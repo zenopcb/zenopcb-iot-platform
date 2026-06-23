@@ -36,7 +36,7 @@ namespace ZenoPCB
 
         if (_debug)
         {
-            Serial.printf("[Control] 📥 Received: %s\n", payload.c_str());
+            ZENO_LOG("Control", "Received: %s", payload.c_str());
         }
 
         // Parse JSON
@@ -44,7 +44,7 @@ namespace ZenoPCB
         DeserializationError error = deserializeJson(doc, payload);
         if (error)
         {
-            Serial.printf("[Control] ❌ JSON parse error: %s\n", error.c_str());
+            ZENO_LOG("Control", "JSON parse error: %s", error.c_str());
             return result;
         }
 
@@ -68,7 +68,7 @@ namespace ZenoPCB
 
         if (isGetAll)
         {
-            Serial.println("[Control] 🔄 GET_ALL command received - Triggering non-blocking read...");
+            ZENO_LOG("Control", "GET_ALL command received - Triggering non-blocking read...");
 
             // Force read all registers (non-blocking)
             auto &pollingEngine = RegisterPollingEngine::getInstance();
@@ -78,7 +78,7 @@ namespace ZenoPCB
             _getallRequest.pending = true;
             _getallRequest.startTime = millis();
 
-            Serial.printf("[Control] ⏱️ Scheduled get_all processing after %dms\n", _getallRequest.waitTimeMs);
+            ZENO_LOG("Control", "Scheduled get_all processing after %dms", _getallRequest.waitTimeMs);
 
             // Mark as successful command
             result.totalRequests = 1;
@@ -94,7 +94,7 @@ namespace ZenoPCB
         {
             if (count >= MAX_CONTROL_REGISTERS)
             {
-                Serial.printf("[Control] ⚠️ Max %d registers per message, ignoring rest\n",
+                ZENO_LOG("Control", "Max %d registers per message, ignoring rest",
                               MAX_CONTROL_REGISTERS);
                 break;
             }
@@ -109,7 +109,7 @@ namespace ZenoPCB
 
                 if (_debug)
                 {
-                    Serial.printf("[Control] 🔑 Z key %s routed to ZKeyBuffer\n", mqttKey.c_str());
+                    ZENO_LOG("Control", "Z key %s routed to ZKeyBuffer", mqttKey.c_str());
                 }
 
                 result.addResult(ControlWriteResult(mqttKey, true, 0, "Z key accepted"));
@@ -161,7 +161,7 @@ namespace ZenoPCB
 
         if (_debug)
         {
-            Serial.printf("[Control] 📊 Result: %d/%d success\n",
+            ZENO_LOG("Control", "Result: %d/%d success",
                           result.successCount, result.totalRequests);
         }
 
@@ -198,11 +198,11 @@ namespace ZenoPCB
                                                         {
                                                             if (success)
                                                             {
-                                                                Serial.printf("[Control] ✅ Write successful: %s = %.2f\n", mqttKey.c_str(), value);
+                                                                ZENO_LOG("Control", "Write successful: %s = %.2f", mqttKey.c_str(), value);
                                                             }
                                                             else
                                                             {
-                                                                Serial.printf("[Control] ❌ Write failed: %s \u2014 %s\n", mqttKey.c_str(), error.c_str());
+                                                                ZENO_LOG("Control", "Write failed: %s \u2014 %s", mqttKey.c_str(), error.c_str());
                                                             }
                                                             // Always publish telemetry immediately after write completes:
                                                             // - Success: publishes new held value so mobile UI stays correct
@@ -214,7 +214,7 @@ namespace ZenoPCB
         {
             if (_debug)
             {
-                Serial.printf("[Control] 📥 Queued: %s = %.2f (addr=%d, type=%d)\n",
+                ZENO_LOG("Control", "Queued: %s = %.2f (addr=%d, type=%d)",
                               mqttKey.c_str(), value, config->address, (int)config->dataType);
             }
             return ControlWriteResult(mqttKey, true, value); // Queued = success
@@ -234,27 +234,27 @@ namespace ZenoPCB
         if (!_getallRequest.isReady(millis()))
             return;
 
-        Serial.println("[Control] ✅ Get_all wait time elapsed - Building telemetry...");
+        ZENO_LOG("Control", "Get_all wait time elapsed - Building telemetry...");
 
         // Build telemetry JSON
         String telemetryJson = _buildGetAllTelemetry();
 
-        Serial.printf("[Control] 📤 Telemetry JSON built (%d bytes)\n", telemetryJson.length());
+        ZENO_LOG("Control", "Telemetry JSON built (%d bytes)", telemetryJson.length());
         if (telemetryJson.length() < 500)
         {
-            Serial.printf("[Control] 📊 Data: %s\n", telemetryJson.c_str());
+            ZENO_LOG("Control", "Data: %s", telemetryJson.c_str());
         }
 
         // Trigger callback to publish
         if (_getallCallback)
         {
-            Serial.println("[Control] 📮 Triggering callback to publish control response...");
+            ZENO_LOG("Control", "Triggering callback to publish control response...");
             _getallCallback(telemetryJson);
-            Serial.println("[Control] ✅ Callback completed");
+            ZENO_LOG("Control", "Callback completed");
         }
         else
         {
-            Serial.println("[Control] ⚠️ No callback registered for get_all response!");
+            ZENO_LOG("Control", "No callback registered for get_all response!");
         }
 
         // Clear pending state

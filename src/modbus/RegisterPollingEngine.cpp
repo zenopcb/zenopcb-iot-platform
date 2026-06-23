@@ -217,7 +217,7 @@ namespace ZenoPCB
             if (existing.mqttKey == request.mqttKey)
             {
                 // Replace with newer value (debounce rapid on/off)
-                Serial.printf("[WriteQueue] 🔄 Dedupe: %s = %.2f -> %.2f\n",
+                ZENO_LOG("WriteQueue", "Dedupe: %s = %.2f -> %.2f",
                               request.mqttKey.c_str(), existing.value, request.value);
                 existing.value = request.value;
                 existing.timestamp = request.timestamp;
@@ -229,13 +229,13 @@ namespace ZenoPCB
         // Check queue size
         if (_writeQueue.size() >= MAX_WRITE_QUEUE_SIZE)
         {
-            Serial.printf("[WriteQueue] ❌ Queue full (max=%d)\n", MAX_WRITE_QUEUE_SIZE);
+            ZENO_LOG("WriteQueue", "Queue full (max=%d)", MAX_WRITE_QUEUE_SIZE);
             return false;
         }
 
         // Add new request
         _writeQueue.push_back(request);
-        Serial.printf("[WriteQueue] 📥 Enqueued: %s = %.2f (queue size=%d)\n",
+        ZENO_LOG("WriteQueue", "Enqueued: %s = %.2f (queue size=%d)",
                       request.mqttKey.c_str(), request.value, _writeQueue.size());
         return true;
     }
@@ -249,7 +249,7 @@ namespace ZenoPCB
         const DataMonitorConfig *config = buffer.getRegisterConfig(mqttKey);
         if (!config)
         {
-            Serial.printf("[WriteQueue] ❌ Register not found: %s\n", mqttKey.c_str());
+            ZENO_LOG("WriteQueue", "Register not found: %s", mqttKey.c_str());
             if (callback)
                 callback(false, "Register not found");
             return false;
@@ -259,7 +259,7 @@ namespace ZenoPCB
         if (config->registerType != RegisterType::REG_HOLDING &&
             config->registerType != RegisterType::REG_COIL)
         {
-            Serial.printf("[WriteQueue] ❌ Not writable: %s\n", mqttKey.c_str());
+            ZENO_LOG("WriteQueue", "Not writable: %s", mqttKey.c_str());
             if (callback)
                 callback(false, "Register not writable");
             return false;
@@ -327,7 +327,7 @@ namespace ZenoPCB
         _currentWrite->stateStartTime = millis();
         _currentWrite->currentRegIndex = 0;
 
-        Serial.printf("[WriteQueue] 🚀 Starting write: %s = %.2f (regs=%d)\n",
+        ZENO_LOG("WriteQueue", "Starting write: %s = %.2f (regs=%d)",
                       _currentWrite->mqttKey.c_str(), _currentWrite->value,
                       _currentWrite->totalRegs);
 
@@ -361,7 +361,7 @@ namespace ZenoPCB
                 if (_currentWrite->retryCount < WriteRequest::MAX_RETRIES)
                 {
                     _currentWrite->retryCount++;
-                    Serial.printf("[WriteQueue] ⏱️ Timeout, retry %d/%d: %s reg[%d]\n",
+                    ZENO_LOG("WriteQueue", "Timeout, retry %d/%d: %s reg[%d]",
                                   _currentWrite->retryCount, WriteRequest::MAX_RETRIES,
                                   _currentWrite->mqttKey.c_str(), _currentWrite->currentRegIndex);
 
@@ -419,7 +419,7 @@ namespace ZenoPCB
 
         if (!conn || !conn->isConnected())
         {
-            Serial.printf("[WriteQueue] ❌ Connection not available: %s\n",
+            ZENO_LOG("WriteQueue", "Connection not available: %s",
                           _currentWrite->connectionId.c_str());
             return false;
         }
@@ -432,13 +432,13 @@ namespace ZenoPCB
         if (_currentWrite->registerType == RegisterType::REG_COIL)
         {
             success = conn->writeCoil(addr, value != 0, _currentWrite->slaveId);
-            Serial.printf("[WriteQueue] 📝 writeCoil addr=%d val=%d -> %s\n",
+            ZENO_LOG("WriteQueue", "writeCoil addr=%d val=%d -> %s",
                           addr, value, success ? "OK" : "FAIL");
         }
         else
         {
             success = conn->writeRegister(addr, value, _currentWrite->slaveId);
-            Serial.printf("[WriteQueue] 📝 writeReg addr=%d val=0x%04X -> %s\n",
+            ZENO_LOG("WriteQueue", "writeReg addr=%d val=0x%04X -> %s",
                           addr, value, success ? "OK" : "FAIL");
         }
 
@@ -472,14 +472,14 @@ namespace ZenoPCB
             buffer.setWriteHold(_currentWrite->mqttKey, ModbusDataBuffer::WRITE_HOLD_MS);
 
             _writesCompleted++;
-            Serial.printf("[WriteQueue] ✅ Completed: %s = %.2f (hold %dms)\n",
+            ZENO_LOG("WriteQueue", "Completed: %s = %.2f (hold %dms)",
                           _currentWrite->mqttKey.c_str(), _currentWrite->value,
                           (int)ModbusDataBuffer::WRITE_HOLD_MS);
         }
         else
         {
             _writesFailed++;
-            Serial.printf("[WriteQueue] ❌ Failed: %s - %s\n",
+            ZENO_LOG("WriteQueue", "Failed: %s - %s",
                           _currentWrite->mqttKey.c_str(), error.c_str());
         }
 
@@ -892,7 +892,7 @@ namespace ZenoPCB
 
         if (count > 0)
         {
-            Serial.printf("[PollingEngine] %s %d registers for connection '%s'\n",
+            ZENO_LOG("PollingEngine", "%s %d registers for connection '%s'",
                           enable ? "✅ Enabled" : "⏸️ Disabled", count, connectionId.c_str());
         }
         return count;
@@ -906,7 +906,7 @@ namespace ZenoPCB
     // ⭐ v2.5: Force immediate read — mark all tasks as due, async loop picks them up
     void RegisterPollingEngine::forceReadAll()
     {
-        Serial.println("[PollingEngine] 🔄 Force reading ALL enabled registers...");
+        ZENO_LOG("PollingEngine", "Force reading ALL enabled registers...");
 
         size_t totalRegisters = 0;
 
@@ -921,7 +921,7 @@ namespace ZenoPCB
             task.lastPollTime = 0; // Mark as due for immediate polling
         }
 
-        Serial.printf("[PollingEngine] ✅ Triggered force read: %d/%d registers\n",
+        ZENO_LOG("PollingEngine", "Triggered force read: %d/%d registers",
                       totalRegisters, _pollingTasks.size());
     }
 
@@ -930,7 +930,7 @@ namespace ZenoPCB
         auto it = _pollingTasks.find(mqttKey);
         if (it == _pollingTasks.end())
         {
-            Serial.printf("[PollingEngine] ⚠️ Verify read failed: register not found: %s\n", mqttKey.c_str());
+            ZENO_LOG("PollingEngine", "Verify read failed: register not found: %s", mqttKey.c_str());
             return false;
         }
 
@@ -938,13 +938,13 @@ namespace ZenoPCB
 
         if (!task.enabled)
         {
-            Serial.printf("[PollingEngine] ⚠️ Verify read skipped (disabled): %s\n", mqttKey.c_str());
+            ZENO_LOG("PollingEngine", "Verify read skipped (disabled): %s", mqttKey.c_str());
             return false;
         }
 
         // Reset poll timer — async loop will pick it up on next iteration
         task.lastPollTime = 0;
-        Serial.printf("[PollingEngine] ✅ Verify read queued: %s\n", mqttKey.c_str());
+        ZENO_LOG("PollingEngine", "Verify read queued: %s", mqttKey.c_str());
         return true;
     }
 
