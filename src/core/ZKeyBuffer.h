@@ -152,9 +152,24 @@ namespace ZenoPCB
         void requestInstantPublish() { _instantPublishPending = true; }
 
         /**
-         * @brief Mark publish as done (resets timer and pending flags)
+         * @brief Mark publish as done — resets timer AND clears all dirty flags.
+         *
+         * Call this AFTER a successful publish has consumed the dirty values.
+         * Do NOT call this BEFORE publishing — it will wipe values that the
+         * user set in `loop()` between intervals, causing them to never reach
+         * the cloud. Use `markPublishTimer()` instead for pre-publish throttle.
          */
         void markPublished();
+
+        /**
+         * @brief Reset the publish-due timer WITHOUT touching dirty flags.
+         *
+         * Used in the pre-publish hook (so the next `isPublishDue()` is
+         * scheduled correctly even if MQTT is offline / no callback wired)
+         * while preserving any values the user set from `loop()` so they
+         * survive into `_publishZKeyTelemetry()`.
+         */
+        void markPublishTimer();
 
         // ============================================
         // Callbacks (triggered by cloud → device control)

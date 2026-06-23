@@ -341,6 +341,15 @@ namespace ZenoPCB
         clearDirtyFlags(); // Also clear dirty flags to prevent re-publish on next loop
     }
 
+    void ZKeyBuffer::markPublishTimer()
+    {
+        _lastPublishTime = millis();
+        _instantPublishPending = false;
+        // Intentionally NOT calling clearDirtyFlags() — keeps values set from
+        // loop() (e.g. `ZENO_WRITE(Z0, x)` outside ZENO_READ_ALL) alive so
+        // _publishZKeyTelemetry() picks them up on this cycle.
+    }
+
     // ============================================
     // Callbacks
     // ============================================

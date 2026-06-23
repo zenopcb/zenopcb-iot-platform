@@ -975,7 +975,10 @@ namespace ZenoPCB
                 // to process SUBACK packets before we start publishing.
                 // ========================================
                 if (_zKeysEnabled) {
-                    ZKeyBuffer::getInstance().markPublished(); // Reset timer
+                    // Timer-only reset (keep dirty values queued so the first
+                    // post-stabilization publish includes anything set during
+                    // setup() / pre-connect).
+                    ZKeyBuffer::getInstance().markPublishTimer();
                     ZENO_LOG_VERBOSE("[5] ZKey publish timer reset (stabilization delay)");
                 }
 
@@ -1754,9 +1757,15 @@ namespace ZenoPCB
 
             if (zBuffer.isPublishDue())
             {
-                // Luôn mark trước — đảm bảo callback được throttle đúng interval
-                // dù MQTT có connect hay không (tránh spam Serial khi offline)
-                zBuffer.markPublished();
+                // Timer-only reset (NOT markPublished). Previously the call
+                // was markPublished(), which also wiped every dirty flag —
+                // meaning any `ZENO_WRITE(Zx, …)` the user did from `loop()`
+                // between intervals got discarded before `_publishZKeyTelemetry()`
+                // ran, so only values set INSIDE ZENO_READ_ALL ever reached
+                // the cloud. markPublishTimer() preserves those values; the
+                // dirty clear now happens in `_publishZKeyTelemetry()` after
+                // a successful publish (it already calls clearDirtyFlags()).
+                zBuffer.markPublishTimer();
 
                 if (_zKeyReadCallback)
                     _zKeyReadCallback();
