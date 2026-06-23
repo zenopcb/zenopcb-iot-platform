@@ -64,6 +64,11 @@ ZENO_READ(Z0)
 {
     const bool on = param.toBool();
     writeRelay(on);
+    // Echo the applied state back to the cloud so the server stops
+    // polling get_all for confirmation. Without this echo, Z0 stays
+    // ZValueType::NONE in the buffer and is skipped by get_all → the
+    // server keeps re-asking on a short interval.
+    ZENO_WRITE(Z0, on);
     ZENOPCB_PRINTF("[Z0] relay %s\n", on ? "ON" : "OFF");
 }
 
@@ -80,6 +85,13 @@ void setup()
         .enableZKeys()
         .onZKeyChange(ZKey::Z0, onZ0)
         .begin();
+
+    // Publish the initial OFF state right after begin() so the server
+    // sees Z0 in the very first telemetry / get_all response. Without
+    // this seed write, Z0 stays NONE in the buffer until the first
+    // cloud-control arrives, and the server keeps polling get_all
+    // because nothing matches its expected key set.
+    ZENO_WRITE(Z0, false);
 }
 
 void loop()

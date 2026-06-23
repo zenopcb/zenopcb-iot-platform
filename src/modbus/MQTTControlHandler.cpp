@@ -267,6 +267,13 @@ namespace ZenoPCB
     String MQTTControlHandler::_buildGetAllTelemetry()
     {
         JsonDocument doc;
+        // Force the doc to materialise as an empty object so even a
+        // never-set ZKey buffer + zero Modbus registers serialises as
+        // `{}` (valid JSON object, "device alive, no data") instead of
+        // ArduinoJson's default `null`. Many cloud platforms interpret
+        // `null` as "device not ready" and keep polling get_all on a
+        // short interval — see user report on 01_relay_single.ino.
+        doc.to<JsonObject>();
 
         // 1. Merge Modbus register data (if any registers configured)
         // includeNulls=true: get_all must show ALL registers including stale-expired as null
