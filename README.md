@@ -75,6 +75,26 @@ lib_deps =
     https://github.com/zenopcb/zenopcb-iot-platform.git
 ```
 
+### ⚠️ ESP32 — bắt buộc chọn Partition Scheme ≥ 1.9 MB APP
+
+Thư viện full ~1.3 MB, partition **Default** của Arduino IDE chỉ có 1.2 MB APP slot → linker fail `text section exceeds available space`. Hint này tự xuất hiện trong build log ở mọi compile ESP32 ([src/ZenoPCB.h:55-58](src/ZenoPCB.h#L55-L58)).
+
+| Tool | Cách set |
+|---|---|
+| **Arduino IDE** | Tools → Partition Scheme → `Minimal SPIFFS (1.9MB APP with OTA)` hoặc `Huge APP (3MB No OTA)` |
+| **PlatformIO** | Thêm `board_build.partitions = min_spiffs.csv` vào `[env:esp32dev]` |
+
+Tiết kiệm thêm ~126 KB bằng cách disable các module không dùng (thêm vào `build_flags` PIO hoặc Arduino IDE custom flags):
+```
+-DZENOPCB_DISABLE_SCHEDULE
+-DZENOPCB_DISABLE_ALARM
+-DZENOPCB_DISABLE_DIAGNOSTICS
+-DZENOPCB_DISABLE_OTA
+-DZENOPCB_DISABLE_PROVISIONING
+```
+
+Silence hint sau khi đã config xong: `-DZENOPCB_SILENCE_HINTS`.
+
 ## Hello, ZSignals
 
 Lấy thẳng từ [examples/io/00_hello_zsignals/](examples/io/00_hello_zsignals/00_hello_zsignals.ino):

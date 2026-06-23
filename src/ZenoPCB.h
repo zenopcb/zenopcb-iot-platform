@@ -48,6 +48,16 @@
   #endif
 #endif
 
+// ============================================================================
+// Build hint — emitted at every ESP32 compile so users who hit the linker
+// "text section exceeds available space in board" / "Sketch too big" error
+// can scroll up in the IDE log and see what to do. Silence with
+// `-DZENOPCB_SILENCE_HINTS` once the partition scheme is configured.
+// ============================================================================
+#if defined(ESP32) && !defined(ZENOPCB_SILENCE_HINTS)
+#  pragma message("[ZenoPCB] ESP32 build: full library is ~1.3 MB. If linker reports 'text section exceeds available space' / 'Sketch too big', change Arduino IDE Tools > Partition Scheme to 'Minimal SPIFFS (1.9MB APP with OTA)' or larger ('Huge APP 3MB No OTA' for no-OTA builds). PlatformIO: board_build.partitions = min_spiffs.csv. To slim ~126 KB more, add -DZENOPCB_DISABLE_SCHEDULE -DZENOPCB_DISABLE_ALARM -DZENOPCB_DISABLE_DIAGNOSTICS -DZENOPCB_DISABLE_OTA -DZENOPCB_DISABLE_PROVISIONING. Silence this hint with -DZENOPCB_SILENCE_HINTS.")
+#endif
+
 #include <Arduino.h>
 // Phase 7 Plan 07-06 — WiFi.h switch extended to 4 platforms. Phase 7 ports
 // (UNO R4 WiFi, STM32) integrate alongside existing ESP32 + ESP8266 path. F4
