@@ -1,13 +1,13 @@
 #include "Esp32OTA.h"
 
-// Plan 06-03 Pattern B (symmetric to Plan 06-2.5d Esp8266 mirror).
+// (symmetric to Esp8266 mirror).
 #if defined(ESP32)
 
 namespace ZenoPCB {
 
 bool Esp32OTA::begin(size_t expectedSize, const char *expectedMd5) {
     if (!Update.begin(expectedSize)) return false;
-    // Pitfall 2 (RESEARCH "ESP32 API Wrapping Strategy") MD5 via begin().
+    // (RESEARCH "ESP32 API Wrapping Strategy") MD5 via begin.
     if (expectedMd5 && expectedMd5[0] != '\0') {
         Update.setMD5(expectedMd5);
     }
@@ -23,7 +23,7 @@ size_t Esp32OTA::write(const uint8_t *data, size_t len) {
 
 bool Esp32OTA::end() {
     // true = set new partition as bootable. Caller is responsible for the
-    // reboot via IZenoSystem::restart() (interface contract from Plan 04-01).
+    // reboot via IZenoSystem::restart (interface contract from).
     return Update.end(true);
 }
 

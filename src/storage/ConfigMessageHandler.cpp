@@ -5,7 +5,7 @@
  * @author ZenoPCB Development Team
  * @version 1.0.0
  */
-// Phase 7 Plan 07-06.6 TU guard for ZENOPCB_MICRO_BASIC profile.
+// TU guard for ZENOPCB_MICRO_BASIC profile.
 #if !defined(ZENOPCB_DISABLE_STORAGE)
 
 #include "ConfigMessageHandler.h"
@@ -13,7 +13,7 @@
 #include "DataMonitorConfig.h"
 #include "../core/ZenoPCBDebug.h"
 
-// Plan 06-3.5: Modbus IO is ESP32-only. ConfigMessageHandler management methods
+// : Modbus IO is ESP32-only. ConfigMessageHandler management methods
 // (CRUD on LittleFS for ConnectionConfig) remain linkable on ESP8266; the Modbus
 // connection-manager + polling-engine calls are guarded out per call site.
 #if defined(ESP32)
@@ -26,7 +26,7 @@
 #define ZENOPCB_DEBUG_STORAGE 1 // SET TO 1 FOR DEBUG
 #endif
 
-// Phase 7 Plan 07-06.5 route through the portable ZENOPCB_PRINTF shim so
+// route through the portable ZENOPCB_PRINTF shim so
 // platforms without ZENOPCB_PRINTF (Renesas UART on UNO R4, STM32duino
 // HardwareSerial) compile cleanly. ESP32 / ESP8266 path expands to the
 // original `ZENOPCB_PRINTF(...)` byte-for-byte.

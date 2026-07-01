@@ -17,16 +17,16 @@
 namespace ZenoPCB {
 
 // ============================================================================
-// Per-family partition byte budget (07-RESEARCH Pattern 2 lines 476-480).
+// Per-family partition byte budget (lines 476-480).
 // `kPartitionBytes` is the upper bound of the linear walker scan; it does
 // NOT change the underlying ZenoFlashStorage `length()` (which is board-
 // defined via E2END). Clamping below `length()` keeps NVS usage within
-// the per-family RAM/Flash budget per D-12 MICRO profile.
+// the per-family RAM/Flash budget per MICRO profile.
 // ============================================================================
 #if defined(STM32F4xx)
 static constexpr size_t kPartitionBytes = 8u * 1024u;   // F4 NVS budget.
 #elif defined(STM32F1xx)
-static constexpr size_t kPartitionBytes = 2u * 1024u;   // F1 MICRO budget per D-12.
+static constexpr size_t kPartitionBytes = 2u * 1024u;   // F1 MICRO budget per.
 #endif
 
 // Sentinel byte values for the nsHash slot.
@@ -279,13 +279,13 @@ bool Stm32NVS::getBool(const char *key, bool defaultValue) {
 }
 
 // ============================================================================
-// PLACEHOLDER Plan 07-04 W-5 fix narrows working-body scope to 8 core
-// methods; the 4 below are deferred to Plan 07-09 hardware UAT per the plan.
+// PLACEHOLDER W-5 fix narrows working-body scope to 8 core
+// methods; the 4 below are deferred to hardware UAT per the plan.
 // Each returns the IZenoNVS-contract default on failure (false / defaultValue).
 // ============================================================================
 
 bool Stm32NVS::putUChar(const char *, uint8_t) {
-    // TODO Plan 07-09 hardware UAT: route through _appendRecord with 1-byte
+    // TODO hardware UAT: route through _appendRecord with 1-byte
     // value, mirroring putBool. Trivial body held back from Task 2 only
     // to keep the W-5 scope mitigation honest (working bodies for the 8
     // most-used IZenoNVS surfaces; deferred for 4 less-used).
@@ -293,18 +293,18 @@ bool Stm32NVS::putUChar(const char *, uint8_t) {
 }
 
 uint8_t Stm32NVS::getUChar(const char *, uint8_t defaultValue) {
-    // TODO Plan 07-09 hardware UAT: route through _findRecord, expect valLen==1.
+    // TODO hardware UAT: route through _findRecord, expect valLen==1.
     return defaultValue;
 }
 
 bool Stm32NVS::remove(const char *) {
-    // TODO Plan 07-09 hardware UAT: tombstone the record (nsHash =
+    // TODO hardware UAT: tombstone the record (nsHash =
     // kSlotTombstone) via _flash->update; require _readOnly == false.
     return false;
 }
 
 bool Stm32NVS::clear() {
-    // TODO Plan 07-09 hardware UAT: walk the partition and tombstone every
+    // TODO hardware UAT: walk the partition and tombstone every
     // record belonging to _nsHash, then commit. Alternative full-wipe
     // (write 0x00 across [0, kPartitionBytes)) destroys data in other
     // namespaces not what IZenoNVS::clear() promises.

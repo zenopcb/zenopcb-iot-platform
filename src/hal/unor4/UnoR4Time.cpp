@@ -25,7 +25,7 @@ void UnoR4Time::syncNTP(const char *server,
     // seconds when the WiFi co-processor's NTP client has succeeded, or
     // 0 while still warming up.
     //
-    // Per 07-PATTERNS line 668, the `server` and `daylightOffsetSec`
+    // Per line 668, the `server` and `daylightOffsetSec`
     // params are accepted for IZenoTime contract compatibility but are
     // not forwarded to WiFiS3 WiFiS3 picks its own NTP server and
     // does not expose DST configuration. `gmtOffsetSec` is folded into
@@ -35,7 +35,7 @@ void UnoR4Time::syncNTP(const char *server,
         s_lastEpoch = static_cast<uint32_t>(epoch) +
                       static_cast<uint32_t>(gmtOffsetSec);
         s_lastSyncMillis = millis();
-        // TODO (Plan 07-09 UAT): once the Renesas FSP RTC API path is
+        // TODO (UAT): once the Renesas FSP RTC API path is
         // confirmed on hardware, also push the epoch into the RTC so
         // `time(nullptr)` returns the correct value without the cache
         // fallback below.

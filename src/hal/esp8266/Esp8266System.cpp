@@ -10,7 +10,7 @@ namespace ZenoPCB {
 void Esp8266System::restart() {
     ESP.restart();
     // Defense for toolchains that drop [[noreturn]] on virtual methods
-    // (Pitfall 4 / T-4-08). ESP.restart() resets the chip within ~1 ms;
+    // (/). ESP.restart resets the chip within ~1 ms;
     // this loop is unreachable in practice but proves to the compiler
     // that the function body cannot fall through.
     for (;;) {
@@ -37,7 +37,7 @@ uint32_t Esp8266System::getTotalHeap() {
     // DiagnosticsCollector formula `used = getTotalHeap() - getFreeHeap()`
     // therefore over-counts by the WiFi stack share (~30 KB on a
     // connected WiFi STA). Acceptable for diagnostics purposes see
-    // Phase 6 RESEARCH Pitfall 4 and T-06-03 in the plan threat model.
+    // RESEARCH and in the plan threat model.
     return 81920;
 }
 

@@ -90,7 +90,7 @@
 #endif
 
 // ============================================
-// Portable printf shim (Phase 7 Plan 07-05)
+// Portable printf shim
 // ============================================
 // ESP32 + ESP8266 Arduino cores expose `Serial.printf` directly. UNO R4
 // (Renesas `UART` class) and STM32duino (`HardwareSerial`) do NOT - they
@@ -110,7 +110,7 @@
   // longer messages are truncated (defensive, matches ESP32 vprintf 256B
   // chunk behavior).
   //
-  // Plan 07-06.5 (Area C aftermath) - STM32duino + Renesas headers do
+  // (aftermath) - STM32duino + Renesas headers do
   // not pull <stdarg.h> via <stdio.h> the same way Espressif cores do;
   // include both va_list machinery and <Arduino.h> for Serial declaration
   // BEFORE the shim definition. Espressif arm above does not need this
@@ -132,7 +132,7 @@
 #endif
 
 // ============================================
-// Portable strlcpy() shim (Plan 07-06.5)
+// Portable strlcpy shim
 // ============================================
 //
 // `strlcpy()` is a BSD extension. ESP32 + ESP8266 newlib expose it via

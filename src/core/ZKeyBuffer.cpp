@@ -213,7 +213,7 @@ namespace ZenoPCB
             char keyBuf[8];
             snprintf(keyBuf, sizeof(keyBuf), "Z%d", (int)i);
 
-            // ArduinoJson v7 quirk (RESEARCH.md Pitfall #1): doc[const char*]
+            // ArduinoJson v7 quirk (RESEARCH.md): doc[const char*]
             // stores the pointer by reference, NOT a copy. keyBuf goes out of
             // scope on the next loop iteration passing it as a raw char*
             // would dangle when serializeJson runs later.
@@ -326,23 +326,9 @@ namespace ZenoPCB
 
     bool ZKeyBuffer::isPublishDue() const
     {
-        // Hard min-interval floor applies to BOTH instant and timer mode.
-        // Prevents runaway publish when user calls set() (e.g. ZENO_WRITE)
-        // from a tight loop() with setZInstantPublish(true): without this
-        // guard, ESP32 would publish on every loop iteration (~thousands
-        // of MQTT publishes per second) and get rate-limited / disconnected
-        // by the broker. With it, the max rate is 1 Hz regardless of mode.
         if ((millis() - _lastPublishTime) < Z_KEY_MIN_PUBLISH_INTERVAL)
             return false;
-
-        // Instant publish: as soon as the floor passes, publish.
-        if (_instantPublishPending)
-            return true;
-
-        // Timer mode: respect the user-configured interval.
-        if (_publishInterval == 0)
-            return false; // disabled
-        return (millis() - _lastPublishTime) >= _publishInterval;
+        return _instantPublishPending || hasDirtyKeys();
     }
 
     void ZKeyBuffer::markPublished()
@@ -355,10 +341,6 @@ namespace ZenoPCB
     void ZKeyBuffer::markPublishTimer()
     {
         _lastPublishTime = millis();
-        _instantPublishPending = false;
-        // Intentionally NOT calling clearDirtyFlags() keeps values set from
-        // loop() (e.g. `ZENO_WRITE(Z0, x)` outside ZENO_READ_ALL) alive so
-        // _publishZKeyTelemetry() picks them up on this cycle.
     }
 
     // ============================================

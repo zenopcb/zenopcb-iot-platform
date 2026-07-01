@@ -27,12 +27,12 @@ namespace ZenoPCB
         ZENO_LOG_CORE("Tertiary: %s", ntpServer3);
         ZENO_LOG_CORE("GMT Offset: %ld seconds", gmtOffset_sec);
 
-        // Phase 7 Plan 07-06.5 (Area C) configTime() is an
+        // configTime is an
         // Espressif-core SNTP extension that is NOT declared on
         // ArduinoCore-renesas (UNO R4) or STM32duino. NTP on those
         // platforms is delegated to their HAL Time sub-impl
         // (UnoR4Time -> WiFiS3 WiFi.getTime(); Stm32Time placeholder
-        // pending hardware UAT in Plan 07-09). Pattern B TU guard
+        // pending hardware UAT in). TU guard
         // around the configTime + sntp_set_sync_mode call so the
         // body compiles on UNO R4 / STM32; ESP32 + ESP8266 paths
         // byte-identical.
@@ -42,7 +42,7 @@ namespace ZenoPCB
 
         // Set sync mode (immediate) ESP32-only
         // ESP8266 lwIP SNTP does not expose sntp_set_sync_mode; configTime()
-        // above is sufficient on ESP8266 (Plan 06-03 OQ-4 RESOLVED).
+        // above is sufficient on ESP8266.
 #if defined(ESP32)
         sntp_set_sync_mode(SNTP_SYNC_MODE_IMMED);
 #endif

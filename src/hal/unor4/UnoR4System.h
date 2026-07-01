@@ -7,8 +7,8 @@
  *        wraps NVIC_SystemReset + newlib mallinfo + RA4M1 unique-ID + the
  *        ArduinoCore-renesas WatchdogTimer library.
  *
- * Mechanical Pattern A mirror of Esp8266System.{h,cpp} (Plan 06-01).
- * See .planning/phases/07-uno-r4-stm32-ports-capability-matrix/07-PATTERNS.md
+ * Mechanical mirror of Esp8266System.{h,cpp}.
+ * See.planning/phases/07-uno-r4-stm32-ports-capability-matrix/
  * "UnoR4System" (lines 695-749).
  *
  * Method-body divergences from the ESP8266 analog (implemented in
@@ -20,7 +20,7 @@
  *     PLACEHOLDER 0 is returned if `mallinfo` is unavailable.
  *   - `getTotalHeap()` returns hardcoded `32768` (RA4M1 DRAM total ~32 KB
  *     per RESEARCH F1/F4 memory budget table  same pattern as
- *     Esp8266System Pitfall 4).
+ * Esp8266System).
  *   - `getUniqueId()` formats the lower 32 bits of the Renesas FSP 128-bit
  *     unique ID. Wave 1 spike confirms exact API path; a deterministic
  *     PLACEHOLDER is used until then so the surface compiles.
@@ -35,7 +35,7 @@
 
 #include "../IZenoSystem.h"
 
-// Pattern B/Pitfall 7 lifted to .h surface (Plan 06-2.5d carry-forward):
+// / lifted to.h surface (carry-forward)
 // `<Arduino.h>` resolves on every Arduino core, but the underlying
 // `NVIC_SystemReset` / `mallinfo` / `WatchdogTimer` symbols diverge between
 // cores (ESP32 has no Cortex-M NVIC; ESP8266 lacks the standard newlib
@@ -54,7 +54,7 @@ public:
     UnoR4System() = default;
     ~UnoR4System() override = default;
 
-    // Deleted copy semantics (Pitfall 3 hygiene WatchdogTimer is a
+    // Deleted copy semantics (hygiene WatchdogTimer is a
     // process-global singleton on ArduinoCore-renesas).
     UnoR4System(const UnoR4System&) = delete;
     UnoR4System& operator=(const UnoR4System&) = delete;

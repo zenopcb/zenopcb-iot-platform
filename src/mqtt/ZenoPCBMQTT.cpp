@@ -259,7 +259,7 @@ namespace ZenoPCB
     bool ZenoPCBMQTT::publish(const char *topic, const char *payload,
                               MQTTQoS qos, bool retain)
     {
-        // Null-pointer guard (T-3-02). MQTTClient::publish enforces this too,
+        // Null-pointer guard. MQTTClient::publish enforces this too
         // but we short-circuit here to avoid the extra call frame on the hot
         // path.
         if (!topic || !payload)

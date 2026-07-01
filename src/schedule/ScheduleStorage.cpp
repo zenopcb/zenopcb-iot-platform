@@ -1,4 +1,4 @@
-// Phase 7 Plan 07-06.6 TU guard for ZENOPCB_MICRO_BASIC profile.
+// TU guard for ZENOPCB_MICRO_BASIC profile.
 #if !defined(ZENOPCB_DISABLE_SCHEDULE)
 
 #include "ScheduleStorage.h"
@@ -13,7 +13,7 @@ namespace ZenoPCB
     const char *ScheduleStorage::SCHEDULE_DIR = "/schedules";
     const char *ScheduleStorage::METADATA_FILE = "/schedules/meta.json";
 
-    // Static HAL pointer (Plan 04-03 injected by Plan 04-05 wiring).
+    // Static HAL pointer (injected by wiring).
     IZenoHal *ScheduleStorage::_hal = nullptr;
 
     // ============================================
@@ -162,7 +162,7 @@ namespace ZenoPCB
             return false;
         }
 
-        // Read entire file into a bounded buffer (Pitfall 2 wrapper owns
+        // Read entire file into a bounded buffer (wrapper owns
         // file handle lifecycle).
         char buf[SCHEDULE_FILE_BUF_SIZE];
         size_t bytesRead = _hal->storage().readFile(filePath.c_str(), buf, sizeof(buf));

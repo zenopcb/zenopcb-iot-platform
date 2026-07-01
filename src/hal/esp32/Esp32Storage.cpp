@@ -1,6 +1,6 @@
 #include "Esp32Storage.h"
 
-// Plan 06-03 Pattern B (symmetric to Plan 06-2.5d Esp8266 mirror).
+// (symmetric to Esp8266 mirror).
 #if defined(ESP32)
 
 #include <string.h>
@@ -102,7 +102,7 @@ void Esp32Storage::listFiles(const char *prefix,
     // Iterate every direct child entry. Each `entry` is closed automatically
     // when it goes out of scope at the bottom of each loop iteration
     // (Arduino-ESP32 File RAII), but we also close explicitly for clarity
-    // (Pitfall 2 leaked LittleFS handles exhaust the ~5-handle table).
+    // (leaked LittleFS handles exhaust the ~5-handle table).
     while (true) {
         File entry = dir.openNextFile();
         if (!entry) break;

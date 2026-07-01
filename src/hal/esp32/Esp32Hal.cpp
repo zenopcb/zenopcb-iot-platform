@@ -1,6 +1,6 @@
 #include "Esp32Hal.h"
 
-// Plan 06-03 Pattern B (symmetric to Plan 06-2.5d Esp8266 mirror) 
+// (symmetric to Esp8266 mirror)
 // TU guard so this file resolves to an empty translation unit when
 // compiled under non-ESP32 envs (PIO library scanner indexes all .cpp
 // files in lib/ZenoPCB/src/ regardless of build_src_filter).
@@ -8,7 +8,7 @@
 
 namespace ZenoPCB {
 
-// Pitfall 7 Meyers singleton. Lazy, thread-safe in C++11+, and lives
+// Meyers singleton. Lazy, thread-safe in C++11+, and lives
 // as a single symbol in this translation unit so the instance is shared
 // across every consumer that includes Esp32Hal.h. Crucially, the static
 // is FUNCTION-local, not file-scope, so no constructor runs before
@@ -16,8 +16,8 @@ namespace ZenoPCB {
 //
 // Capabilities sanity check (compile-time): the bitmask returned by
 // Esp32Hal::capabilities() must equal CAP_FS_FILES | CAP_OTA | CAP_NVS |
-// CAP_NTP | CAP_WATCHDOG | CAP_CAPTIVE_PORTAL (Phase 7 Plan 07-06
-// extended Esp32Hal with the captive-portal bit so Pattern G fallible
+// CAP_NTP | CAP_WATCHDOG | CAP_CAPTIVE_PORTAL (
+// extended Esp32Hal with the captive-portal bit so fallible
 // wifiProvisioning() proceeds to delegation on ESP32). This is enforced
 // inline in the header impl; the static_assert below double-anchors that
 // to the call-site so a future edit cannot silently desync the two

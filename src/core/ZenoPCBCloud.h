@@ -9,12 +9,12 @@ namespace ZenoPCB
     // Cloud endpoint XOR encoded, key = 0x5A
     // DO NOT store plaintext here.
     //
-    // D-26 single-broker (Phase 7 Plan 07-06, 2026-06-03): two-broker
-    // isolation from Phase 5 D-14 dropped. Single broker
+    // single-broker (, 2026-06-03): two-broker
+    // isolation from dropped. Single broker
     // <mqtt-host>.<tld> for ZMG-01 + ZF-01 production firmware AND OSS
     // library users. The XOR-encoded byte array below decodes to the
     // 15-character canonical host string (verify via the python recipe
-    // on the line above). Phase 5 -DZENOPCB_BROKER_HOST build-flag
+    // on the line above). -DZENOPCB_BROKER_HOST build-flag
     // escape hatch preserved (see ZenoPCB::_initMQTT for layered
     // override logic).
     //

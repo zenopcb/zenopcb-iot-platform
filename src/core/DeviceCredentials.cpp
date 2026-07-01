@@ -1,16 +1,16 @@
 #include "DeviceCredentials.h"
 #include "ZenoPCBDebug.h"
-// Plan 06-03 Rule 3 (Wave 0 grep miss auto-fix) DeviceCredentials.cpp
+// (Wave 0 grep miss auto-fix) DeviceCredentials.cpp
 // includes the platform HAL header directly so the default-ctor can wire
 // in the canonical singleton. ESP32 keeps `getEsp32Hal()`; ESP8266 picks
-// up `getEsp8266Hal()` via the parallel header. Plan 04-05 still wires
+// up `getEsp8266Hal` via the parallel header. still wires
 // explicit DI from Zeno, so the default ctor is the back-compat path.
-// Phase 7 Plan 07-06.5 (Area F) switch extended with UnoR4 + STM32
+// switch extended with UnoR4 + STM32
 // arms so the IZenoHal& reference member is always initialised across
 // all 4 platforms. Renesas + STM32 g++ enforce `-Werror=permissive` 
 // the prior `#if defined(ESP32)` / `#elif defined(ESP8266)` arms left
-// the reference uninitialised on UNO R4 / STM32 builds (Rule 1 bug
-// caught by Plan 07-05 cross-compile gate).
+// the reference uninitialised on UNO R4 / STM32 builds (bug
+// caught by cross-compile gate).
 #if defined(ESP32)
   #include "../hal/esp32/Esp32Hal.h"
 #elif defined(ESP8266)
@@ -25,7 +25,7 @@ namespace ZenoPCB
 {
     namespace
     {
-        // Buffer sizes per 04-03-AUDIT.md 1.2 3236-char credentials plus
+        // Buffer sizes per 1.2 3236-char credentials plus
         // generous padding to absorb future format changes.
         constexpr size_t CREDENTIAL_BUF_SIZE = 64;
     } // namespace
@@ -36,8 +36,8 @@ namespace ZenoPCB
     }
 
     // Backward-compat default ctor uses the canonical platform HAL
-    // singleton (Esp32Hal on ESP32, Esp8266Hal on ESP8266 per Plan 06-03).
-    // Plan 04-05 may replace this with explicit injection from Zeno; until
+    // singleton (Esp32Hal on ESP32, Esp8266Hal on ESP8266).
+    // may replace this with explicit injection from Zeno; until
     // then existing call sites (`DeviceCredentials credentials;`) continue
     // to compile without changes.
     DeviceCredentials::DeviceCredentials()

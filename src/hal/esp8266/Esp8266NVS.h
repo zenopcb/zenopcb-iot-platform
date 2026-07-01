@@ -6,28 +6,28 @@
  * @brief ESP8266 concrete impl of IZenoNVS  wraps the
  *        vshymanskyy/Preferences backport (LittleFS-backed).
  *
- * Mechanical mirror of Esp32NVS.{h,cpp} from Phase 4 (Plan 04-02).
- * See .planning/phases/06-esp8266-port/06-PATTERNS.md Pattern A.
+ * Mechanical mirror of Esp32NVS.{h,cpp} from.
+ * See.planning/phases/06-esp8266-port/.
  *
- * D-05 REVISED: on ESP32 `<Preferences.h>` resolves to the bundled
+ * REVISED: on ESP32 `<Preferences.h>` resolves to the bundled
  * arduino-esp32 core header; on ESP8266 we now use the in-repo vendored
- * vshymanskyy/Preferences@2.2.2 (Plan 06-2.5a vendored + Plan 06-2.5c
+ * vshymanskyy/Preferences@2.2.2 (vendored +
  * renamed class to ZenoPreferences for brand consistency). The backport
  * mirrors the Arduino-ESP32 Preferences surface line-for-line, so the
  * .cpp bodies are byte-identical with `s/Esp32/Esp8266/g` modulo the
  * `Preferences -> ZenoPreferences` class-name swap on ESP8266.
  *
  * Holds a single `ZenoPreferences` member and the `_open` flag so begin() /
- * end() pairing is preserved (Pitfall 1  handle table is small even
+ * end pairing is preserved (handle table is small even
  * on the backport).
  *
- * Deleted copy semantics per Pitfall 3 (ZenoPreferences wraps a single
+ * Deleted copy semantics per (ZenoPreferences wraps a single
  * underlying handle; duplicating the wrapper duplicates the reference).
  */
 
 #include "../IZenoNVS.h"
 
-// Header-body ESP8266 guard (Pattern B / Pitfall 7 Plan 06-2.5a Rule 1
+// Header-body ESP8266 guard (/
 // deviation): the vendored Preferences's Preferences_setup.h emits
 // `#error "For ESP32 devices, please use the native Preferences library"`
 // when defined(ESP32). The previous lib_deps version of `<Preferences.h>`
@@ -39,7 +39,7 @@
 #if defined(ESP8266)
 
 // Preferences API from vendored vshymanskyy/Preferences (MIT, see
-// lib/ZenoPCB/src/vendor/Preferences/LICENSE). Plan 06-2.5a moved this
+// lib/ZenoPCB/src/vendor/Preferences/LICENSE). moved this
 // from `<Preferences.h>` lib_deps pull to in-repo vendored copy so the
 // ZenoPCB Arduino library is self-contained (no external lib_deps).
 #include "../../vendor/Preferences/Preferences.h"
@@ -59,7 +59,7 @@ public:
         }
     }
 
-    // Deleted copy semantics (Pitfall 3 ZenoPreferences wraps a single NVS
+    // Deleted copy semantics (ZenoPreferences wraps a single NVS
     // handle; duplicating the wrapper duplicates the handle reference).
     Esp8266NVS(const Esp8266NVS&) = delete;
     Esp8266NVS& operator=(const Esp8266NVS&) = delete;

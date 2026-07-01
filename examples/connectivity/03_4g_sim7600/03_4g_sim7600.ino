@@ -107,8 +107,10 @@ using namespace ZenoPCB;
 #if defined(ESP32)
   #define MODEM_TX_PIN 17    // ESP32 TX2 -> Modem RX
   #define MODEM_RX_PIN 16    // ESP32 RX2 <- Modem TX
-  #define MODEM_PWR_PIN 4    // Modem PWRKEY (power-on pulse)
-  #define MODEM_RST_PIN 255  // 255 means "not connected"
+  #define MODEM_PWR_PIN 4    // Modem PWRKEY (power-on pulse); -1 if not wired
+  #define MODEM_RST_PIN -1   // Modem RESET line; -1 = not wired. Set to the
+                             // GPIO on the modem RESET pin to let the library
+                             // hardware-reset the modem when it hangs / no SIM.
 #endif
 
 // ============================================

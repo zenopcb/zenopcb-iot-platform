@@ -1,10 +1,10 @@
 #include "WiFiProvisioning.h"
 #include "../core/ZenoPCBDebug.h"
-// Plan 06-03 platform HAL bridge for backward-compat default ctor
-// (Plan 04-05 wires explicit DI from ZenoPCB.cpp callers). WDT-feed
+// platform HAL bridge for backward-compat default ctor
+// (wires explicit DI from ZenoPCB.cpp callers). WDT-feed
 // audit + ESP8266-specific yield()/feedWatchdog() insertions are Plan
 // 06-04 territory; this plan only flips the include + ctor selector.
-// Phase 7 Plan 07-06.5 (Area F follow-up) extend HAL include switch to
+// (follow-up) extend HAL include switch to
 // cover UNO R4 + STM32 so the default WiFiProvisioning() ctor can wire a
 // real reference member instead of `*reinterpret_cast<IZenoHal*>(nullptr)`
 // (the latter trips Renesas + STM32 g++ as an invalid nullptr cast under
@@ -22,19 +22,19 @@
 #include <map>
 #include <algorithm>
 
-// Plan 06-03 ESP8266 compatibility shim for the ESP32 `wifi_mode_t`
+// ESP8266 compatibility shim for the ESP32 `wifi_mode_t`
 // typedef used in _handleVerifyWiFi(). ESP8266 Arduino Core 3.x exposes
 // the same concept under the name `WiFiMode_t`. The encryption-type
 // enum names (WIFI_AUTH_*) used in _encryptionTypeToString() do NOT map
 // 1:1 onto ESP8266 ENC_TYPE_* values (some collide), so that function
 // is guarded directly at its body rather than via macro aliasing here.
-// Plan 06-04 may rework these sites to use a HAL-mediated WiFi
+// may rework these sites to use a HAL-mediated WiFi
 // abstraction instead.
 #if defined(ESP8266)
   using wifi_mode_t = WiFiMode_t;
 #endif
 
-// Bounded buffers for HAL getString() reads. Sizes per 04-03-AUDIT.md 1.1
+// Bounded buffers for HAL getString reads. Sizes per 1.1
 // chosen to cover the existing IEEE 802.11 / WPA2 / dotted-quad maxima
 // plus padding. Stack arrays only on _loadConfig() which runs once at boot
 // (CLAUDE.md "Stack arrays must be < 1 KB" total per-frame here ~512 B).
@@ -53,7 +53,7 @@ namespace ZenoPCB
     } // namespace
 } // namespace ZenoPCB
 
-// Phase 7 Plan 07-06 Pattern H whole-class capability gate. ESP32 + ESP8266
+// whole-class capability gate. ESP32 + ESP8266
 // retain their existing class body verbatim; UNO R4 + STM32 get stub bodies
 // (returns failure + one-time warn log) at the bottom of the file. This TU
 // guard wraps the ISR globals, the `using wifi_mode_t = ...` alias above,
@@ -92,7 +92,7 @@ namespace ZenoPCB
 
     // Backward-compat default ctor uses the canonical platform HAL
     // singleton (Esp32Hal on ESP32, Esp8266Hal on ESP8266 per Plan
-    // 06-03). Plan 04-05 will switch ZenoPCB.cpp callers to pass `_hal`
+    // 06-03). will switch ZenoPCB.cpp callers to pass `_hal`
     // directly.
     WiFiProvisioning::WiFiProvisioning()
 #if defined(ESP32)
@@ -250,7 +250,7 @@ namespace ZenoPCB
     {
         _checkButton();
 
-        // PITFALL 3 (D-14) ESP8266 SW-WDT fires at ~1.5s. Feed every loop iteration.
+        // PITFALL 3 ESP8266 SW-WDT fires at ~1.5s. Feed every loop iteration.
         // No-op-ish on ESP32 (esp_task_wdt_reset() is cheap, ~tens of cycles).
         _hal.system().feedWatchdog();
 
@@ -925,7 +925,7 @@ namespace ZenoPCB
         while (WiFi.status() != WL_CONNECTED && attempts < 30) // 15s
         {
             delay(500);
-            yield();                          // PITFALL 3 (D-14) explicit cooperative yield
+            yield();                          // PITFALL 3 explicit cooperative yield
             _hal.system().feedWatchdog();
             ZENO_LOG_PROV_RAW(".");
             attempts++;
@@ -1720,7 +1720,7 @@ namespace ZenoPCB
 
     bool WiFiProvisioning::_scanNetworks(std::vector<WiFiNetwork> &networks)
     {
-        // PITFALL 3 (D-14) synchronous WiFi.scanNetworks() blocks 2-5s on ESP8266
+        // PITFALL 3 synchronous WiFi.scanNetworks blocks 2-5s on ESP8266
         // single-threaded cooperative loop. Feed WDT before + after to bracket the
         // blocking window.
         _hal.system().feedWatchdog();
@@ -1788,9 +1788,9 @@ namespace ZenoPCB
 
     bool WiFiProvisioning::_loadConfig()
     {
-        // Plan 04-03 route through IZenoNVS. Namespace literal "zenopcb"
-        // and every key name preserved byte-for-byte per 04-03-AUDIT.md
-        // 1.1 (T-4-02 mitigation devices keep saved Wi-Fi config across
+        // route through IZenoNVS. Namespace literal "zenopcb"
+        // and every key name preserved byte-for-byte per
+        // 1.1 (mitigation devices keep saved Wi-Fi config across
         // the refactor).
 
         // First try readonly mode
@@ -1964,9 +1964,9 @@ namespace ZenoPCB
 
     String WiFiProvisioning::_getChipID()
     {
-        // T-4-CHIPID: HAL impl preserves the exact "%08X" format on the
+        // HAL impl preserves the exact "%08X" format on the
         // upper 32 bits of ESP.getEfuseMac() byte-for-byte identical to
-        // the pre-Phase-4 SSID suffix (verified in Esp32System.cpp:34-50).
+        // the previous SSID suffix.
         char chipIdStr[13];
         _hal.system().getUniqueId(chipIdStr, sizeof(chipIdStr));
         return String(chipIdStr);
@@ -2235,7 +2235,7 @@ namespace ZenoPCB
 
 #elif !defined(ZENOPCB_DISABLE_PROVISIONING)  // UNO R4 / STM32 stub block (kept for builds without DISABLE_PROVISIONING)
 // ============================================================================
-// Phase 7 Plan 07-06 Pattern H whole-class capability-gate stub block.
+// whole-class capability-gate stub block.
 //
 // UNO R4 has no captive-portal HTTP-server analog (RESEARCH A1, 3-week
 // port deferred to v0.4.0); STM32 has no AP-mode hardware. Every public
@@ -2243,7 +2243,7 @@ namespace ZenoPCB
 // so existing call sites compile + link, while runtime callers get a
 // clear signal that the feature is unavailable on this platform.
 //
-// Plan 07-06.6 extension: when `-DZENOPCB_DISABLE_PROVISIONING` is set
+// extension: when `-DZENOPCB_DISABLE_PROVISIONING` is set
 // (e.g. ZENOPCB_MICRO_BASIC profile on F103 Blue Pill, 64KB Flash), this
 // stub block also compiles out callers must guard their _initProvisioning
 // + _wifiProvisioning use sites with the same flag (done in ZenoPCB.cpp).
@@ -2275,7 +2275,7 @@ namespace ZenoPCB
             if (!flag)
             {
                 flag = true;
-                ZENO_LOG_CORE("[WARN] WiFiProvisioning::%s not available on this platform (Pattern H)", method);
+                ZENO_LOG_CORE("[WARN] WiFiProvisioning::%s not available on this platform", method);
             }
         }
     } // namespace
@@ -2294,8 +2294,8 @@ namespace ZenoPCB
     {
     }
 
-    // Default ctor Plan 07-06.5 (Area F follow-up): mirror the
-    // DeviceCredentials default-arg HAL bridge pattern (commit 6bc92f0).
+    // Default ctor (follow-up): mirror the
+    // DeviceCredentials default-arg HAL bridge pattern.
     // The IZenoHal& reference member must be initialised on every
     // platform; the prior `*reinterpret_cast<IZenoHal*>(nullptr)`
     // workaround tripped Renesas + STM32 g++ strict-conversion. The
@@ -2315,7 +2315,7 @@ namespace ZenoPCB
         ZenoPCB v0.3.0 supports ESP32, ESP8266, UNO R4 WiFi, STM32 F1/F4."
 #endif
     {
-        // Pattern H: provisioning surface stays guarded on UNO R4 / STM32
+        // : provisioning surface stays guarded on UNO R4 / STM32
         // (the web-server / button-trigger / NVS paths are no-op stubs);
         // the HAL reference is real so method bodies that touch _hal
         // (e.g. _hal.nvs()) compile-link cleanly.

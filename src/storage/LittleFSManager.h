@@ -2,12 +2,12 @@
  * @file LittleFSManager.h
  * @brief Connection + DataMonitor config persistence (via HAL).
  *
- * Plan 04-03  file I/O now routes through `IZenoStorage` injected via
+ * file I/O now routes through `IZenoStorage` injected via
  * `setHal(IZenoHal*)`. The class name is retained for caller compatibility
  * (`zeno.enableStorage()` and `LittleFSManager::*` calls in main.cpp /
  * zf01_main.cpp); only the implementation backend has changed.
  *
- * Plan 04-05 wires the canonical ESP32 HAL from `Zeno::begin()`. Until
+ * wires the canonical ESP32 HAL from `Zeno::begin`. Until
  * then, methods early-return when no HAL is set.
  */
 
@@ -31,7 +31,7 @@ namespace ZenoPCB
     {
     public:
         // ============================================
-        // HAL injection (Plan 04-03)
+        // HAL injection
         // ============================================
         static void setHal(IZenoHal *hal);
 

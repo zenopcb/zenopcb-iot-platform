@@ -7,20 +7,20 @@
  *
  * Surface mirrors Arduino-ESP32 `Preferences` exactly so refactored
  * consumers preserve byte-for-byte NVS storage compatibility  devices
- * keep their saved Wi-Fi config across the refactor (per 04-RESEARCH.md
- * Pitfall 6 / A9).
+ * keep their saved Wi-Fi config across the refactor (per
+ * / A9).
  *
  * Lifecycle:
  *  - begin(ns, readOnly) opens a namespace handle.
  *  - end() releases the handle. ESP32 NVS supports ~4 simultaneously
  *    open namespaces  every begin() must be paired with an end() to
- *    prevent handle table exhaustion (per Pitfall 1).
+ * prevent handle table exhaustion (per).
  *  - Multiple sequential namespaces are fine: begin("a")...end(),
  *    begin("b")...end().
  *
  * The full audited Preferences surface from WiFiProvisioning.cpp is
  * exposed here: putBool/getBool, putUChar/getUChar, putString/getString,
- * putULong/getULong, remove, clear. Plan 04-03 will refactor consumers
+ * putULong/getULong, remove, clear. will refactor consumers
  * to this surface; signature parity matters.
  *
  * No Arduino heap-allocated text type in signatures  char buffers only

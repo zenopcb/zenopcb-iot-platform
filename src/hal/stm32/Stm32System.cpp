@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-// D-25 Arduino-minimal abstraction: route time / logging / blocking-wait
+// Arduino-minimal abstraction: route time / logging / blocking-wait
 // primitives through the compat layer instead of bare <Arduino.h>.
 // arduino_compat.h pulls <Arduino.h> internally when ARDUINO is defined
 // (i.e. STM32duino + PlatformIO default build), which transitively
@@ -31,10 +31,10 @@ void Stm32System::restart() {
 }
 
 uint32_t Stm32System::getFreeHeap() {
-    // PLACEHOLDER per 07-PATTERNS "Stm32System" newlib-nano on
+    // PLACEHOLDER per "Stm32System" newlib-nano on
     // STM32duino exposes `mallinfo().fordblks` for free-block tracking,
     // but the exact include path varies per ArduinoCore-STM32 version.
-    // Plan 07-09 hardware UAT validates and replaces with the real
+    // hardware UAT validates and replaces with the real
     // mallinfo call once F4 + F1 board availability is confirmed.
     // Returning 0 keeps the IZenoSystem contract intact (uint32_t free
     // heap; consumer-side DiagnosticsCollector ignores 0 as "unknown").
@@ -42,13 +42,13 @@ uint32_t Stm32System::getFreeHeap() {
 }
 
 uint32_t Stm32System::getMaxAllocHeap() {
-    // PLACEHOLDER same mallinfo route as getFreeHeap(). Plan 07-09 UAT.
+    // PLACEHOLDER same mallinfo route as getFreeHeap. UAT.
     return 0;
 }
 
 uint32_t Stm32System::getTotalHeap() {
     // Per-family static const STM32 SRAM is statically partitioned at
-    // link time (07-RESEARCH F1 + F4 spike).
+    // link time (F1 + F4 spike).
 #if defined(STM32F4xx)
     return 196608;   // 192 KB SRAM on Nucleo-F429ZI / F407VG.
 #elif defined(STM32F1xx)
@@ -77,7 +77,7 @@ size_t Stm32System::getUniqueId(char *out, size_t outSize) {
 }
 
 uint32_t Stm32System::uptimeMs() {
-    // D-25: route through arduino_compat::now_ms() so a CubeIDE port can
+    // : route through arduino_compat::now_ms so a CubeIDE port can
     // swap to HAL_GetTick() via the user-provided arduino_compat.c stub.
     // On the STM32duino + PlatformIO default build this resolves inline
     // to the standard Arduino time primitive (which itself wraps
@@ -91,7 +91,7 @@ void Stm32System::feedWatchdog() {
     // be IWatchdog.begin(timeout_us) by the application before reload()
     // takes effect. If the user hasn't called IWatchdog.begin() in
     // setup(), reload() is a silent no-op acceptable behaviour per
-    // 07-PATTERNS "Stm32System" line 781.
+    // "Stm32System" line 781.
     IWatchdog.reload();
 }
 

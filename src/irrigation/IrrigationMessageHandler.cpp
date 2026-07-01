@@ -1,4 +1,4 @@
-// Plan 06-03 D-03 Irrigation subsystem is ESP32-only.
+// Irrigation subsystem is ESP32-only.
 #if defined(ESP32)
 
 #include "IrrigationMessageHandler.h"
@@ -649,4 +649,4 @@ namespace ZenoPCB
 
 } // namespace ZenoPCB
 
-#endif  // Plan 06-03 D-03 defined(ESP32)
+#endif  // defined(ESP32)

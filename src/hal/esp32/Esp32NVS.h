@@ -5,14 +5,14 @@
  * @file Esp32NVS.h
  * @brief ESP32 concrete impl of IZenoNVS  wraps Arduino-ESP32 Preferences.
  *
- * Part of Phase 4 HAL (plan 04-02). Holds a single `Preferences` member
- * and the `_open` flag so begin() / end() pairing is preserved (Pitfall 1).
- * Deleted copy semantics per Pitfall 3.
+ * Part of HAL (plan 04-02). Holds a single `Preferences` member
+ * and the `_open` flag so begin / end pairing is preserved.
+ * Deleted copy semantics per.
  */
 
 #include "../IZenoNVS.h"
 
-// Plan 06-03 TU-guard-at-header (symmetric to the Plan 06-2.5d fix on
+// TU-guard-at-header (symmetric to the fix on
 // the ESP8266 sub-impls). PIO's library scanner indexes every header in
 // `lib/ZenoPCB/src/` on every env, including ESP8266 envs, so the
 // `<Preferences.h>` include below must sit behind the platform guard.
@@ -37,7 +37,7 @@ public:
         }
     }
 
-    // Deleted copy semantics (Pitfall 3 Preferences wraps a single NVS
+    // Deleted copy semantics (Preferences wraps a single NVS
     // handle; duplicating the wrapper duplicates the handle reference).
     Esp32NVS(const Esp32NVS&) = delete;
     Esp32NVS& operator=(const Esp32NVS&) = delete;

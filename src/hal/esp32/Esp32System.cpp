@@ -1,6 +1,6 @@
 #include "Esp32System.h"
 
-// Plan 06-03 Pattern B (symmetric to Plan 06-2.5d Esp8266 mirror).
+// (symmetric to Esp8266 mirror).
 #if defined(ESP32)
 
 #include <stdio.h>
@@ -11,7 +11,7 @@ namespace ZenoPCB {
 void Esp32System::restart() {
     ESP.restart();
     // Defense for toolchains that drop [[noreturn]] on virtual methods
-    // (Pitfall 4 / T-4-08). ESP.restart() resets the chip within ~1 ms;
+    // (/). ESP.restart resets the chip within ~1 ms;
     // this loop is unreachable in practice but proves to the compiler
     // that the function body cannot fall through.
     for (;;) {
@@ -30,7 +30,7 @@ uint32_t Esp32System::getMaxAllocHeap() {
 uint32_t Esp32System::getTotalHeap() {
     // Matches DiagnosticsCollector.cpp:228 exactly so the used-heap
     // computation (getTotalHeap() - getFreeHeap()) is byte-identical
-    // before and after Phase 4.
+    // before and after.
     return ESP.getHeapSize();
 }
 

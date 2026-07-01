@@ -6,11 +6,11 @@
 #include "../core/TimeManager.h"
 #include "../core/ZenoNetworkProvider.h"
 #include "../hal/IZenoHal.h"
-// Plan 06-03 Pitfall 5 platform-specific WiFi header.
-// Phase 7 Plan 07-06 switch extended with UNO R4 + STM32 arms.
-// F1 MICRO profile drops Diagnostics entirely (D-12); the class still
-// compiles on STM32F1 builds but Pattern F enableDiagnostics() short-circuit
-// (deferred to Plan 07-07) prevents instantiation when CAP_DIAGNOSTICS=0.
+// platform-specific WiFi header.
+// switch extended with UNO R4 + STM32 arms.
+// F1 MICRO profile drops Diagnostics entirely; the class still
+// compiles on STM32F1 builds but enableDiagnostics short-circuit
+// (deferred to) prevents instantiation when CAP_DIAGNOSTICS=0.
 #if defined(ESP32)
   #include <WiFi.h>
 #elif defined(ESP8266)

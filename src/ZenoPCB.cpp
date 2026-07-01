@@ -1,7 +1,7 @@
 #include "ZenoPCB.h"
 #include "core/ZenoPCBDebug.h"
 #include "core/ZenoPCBCloud.h"
-// Plan 06-03 D-03 Modbus subsystem is ESP32-only. The inline helpers
+// Modbus subsystem is ESP32-only. The inline helpers
 // (initializeModbusSystem, loadSavedModbusConfigs, loopModbusSystem) and
 // MQTTControlHandler stay out of ESP8266 translation units; every call
 // site below is wrapped in a parallel `#if defined(ESP32) ... #endif`.
@@ -9,7 +9,7 @@
   #include "modbus/ModbusIntegration.h"
   #include "modbus/MQTTControlHandler.h"
 #endif
-// Storage consumers that use static-pointer HAL injection (Plan 04-05 wiring).
+// Storage consumers that use static-pointer HAL injection (wiring).
 #include "schedule/ScheduleStorage.h"
 #include "storage/LittleFSManager.h"
 #include "ZenoJson.h"  // ArduinoJson API from vendored copy (namespace ZenoJson; see ZenoJson/LICENSE.md)
@@ -18,8 +18,8 @@ namespace ZenoPCB
 {
 
     // ============================================
-    // OTA result NVS persistence (T-4-02 byte-compat: namespace="ota_result",
-    // key="payload"). Buffer size justified in 04-05-AUDIT.md 3.
+    // OTA result NVS persistence (byte-compat: namespace="ota_result"
+    // key="payload"). Buffer size justified in 3.
     // ============================================
     static const size_t OTA_PAYLOAD_BUF_SIZE = 512;
 
@@ -148,9 +148,9 @@ namespace ZenoPCB
         return *this;
     }
 
-    // Pattern G (Phase 7 D-06) fallible captive-portal start. Distinct overload
+    // fallible captive-portal start. Distinct overload
     // from the builder above; ESP32 + ESP8266 advertise CAP_CAPTIVE_PORTAL so they
-    // proceed to delegation, STM32 / UNO R4 (Plan 07-02 / 07-04) leave the bit unset
+    // proceed to delegation, STM32 / UNO R4 leave the bit unset
     // and hit the Unavailable arm with a single warn log.
     ZenoCapability Zeno::wifiProvisioning(const char *apSsid, const char *apPassword)
     {
@@ -162,7 +162,7 @@ namespace ZenoPCB
 
         // Record the requested AP SSID + password into the existing provisioning
         // config so the WiFiProvisioning lifecycle (allocated in begin()) starts
-        // with the user-supplied credentials. Plan 07-06 refines the per-platform
+        // with the user-supplied credentials. refines the per-platform
         // delegation surface; this body needs only to compile-link on ESP32 today.
         _provisioningEnabled = true;
         if (apSsid != nullptr)
@@ -313,11 +313,11 @@ namespace ZenoPCB
         return *this;
     }
 
-    // Phase 7 D-27 pin a PEM-encoded root CA for MQTT TLS. Pattern F silent
+    // pin a PEM-encoded root CA for MQTT TLS. silent
     // no-op when ZENOPCB_ENABLE_TLS is not defined; otherwise the stored pointer
     // is consumed inside _initMQTT() to call WiFiClientSecure::setCACert
     // (ESP32). On ESP8266 BearSSL the call site logs a [WARN] and falls back
-    // to setInsecure full BearSSL X509List integration deferred (D-27 note).
+    // to setInsecure full BearSSL X509List integration deferred (note).
     Zeno &Zeno::setRootCA(const char *pemBuffer)
     {
 #ifdef ZENOPCB_ENABLE_TLS
@@ -327,7 +327,7 @@ namespace ZenoPCB
             ZENO_LOG_CORE("Root CA pinned for TLS (caller owns lifetime)");
         }
 #else
-        (void)pemBuffer;  // Pattern F: silent no-op when TLS not opt-in
+        (void)pemBuffer;  // : silent no-op when TLS not opt-in
 #endif
         return *this;
     }
@@ -537,8 +537,13 @@ namespace ZenoPCB
         ZenoTimer::getInstance().commitPending();
         ZKeyBuffer::getInstance().commitPendingHandlers();
 
+        if (_zKeysEnabled && ZenoTimer::getInstance().count() == 0)
+        {
+            ZENO_LOG_CORE("[WARN] No ZENO_EVERY blocks registered - device will not publish periodically");
+        }
+
         // Wire the HAL into static-pointer storage consumers
-        // (Plan 04-05) replaces the nullptr default from plans 04-03/04-04.
+        // replaces the nullptr default from plans 04-03/04-04.
         // Must run BEFORE any module that uses storage (LittleFSManager,
         // ScheduleStorage, IrrigationStorage). Order is irrelevant within
         // this block they are independent statics.
@@ -642,7 +647,7 @@ namespace ZenoPCB
         _initOTA();
 
 #if defined(ESP32)
-        // Initialize Modbus system (ESP32-only per Plan 06-03 D-03)
+        // Initialize Modbus system (ESP32-only)
         //
         // Gate 2026-06-06: Modbus is the gateway-class feature only
         // useful when the device persists connection configs + register
@@ -679,7 +684,7 @@ namespace ZenoPCB
 #endif  // ESP32
 
         // If WiFi credentials provided directly, use them
-        // Pattern H TU gate: WiFi.mode() + WIFI_STA enum are ESP-specific.
+        // TU gate: WiFi.mode + WIFI_STA enum are ESP-specific.
         // UNO R4 (CWifi) and STM32 (WiFiEspAT) expose neither; the body is
         // a no-op on those platforms the network provider abstraction is
         // expected to drive connectivity via setNetworkProvider() instead.
@@ -759,7 +764,7 @@ namespace ZenoPCB
         if (_mqtt && _mqttEnabled)
         {
             ZENO_LOG_VERBOSE("Setting up unified MQTT callbacks...");
-            _mqtt->onConnected([this]()
+            auto _mqttConnectHandler = [this]()
                                {
 
                 if (!_mqtt || !_mqtt->isConnected()) {
@@ -891,7 +896,7 @@ namespace ZenoPCB
                 // After reboot + MQTT reconnect publish here
                 // ========================================
                 if (_otaEnabled) {
-                    // T-4-02: namespace "ota_result" + key "payload" preserved byte-for-byte.
+                    // : namespace "ota_result" + key "payload" preserved byte-for-byte.
                     if (_hal.nvs().begin("ota_result", true)) {
                         char payloadBuf[OTA_PAYLOAD_BUF_SIZE];
                         _hal.nvs().getString("payload", payloadBuf, sizeof(payloadBuf), "");
@@ -914,7 +919,7 @@ namespace ZenoPCB
 
                             if (published) {
                                 // Clear NVS only on successful publish
-                                // T-4-02: namespace "ota_result" preserved byte-for-byte.
+                                // : namespace "ota_result" preserved byte-for-byte.
                                 _hal.nvs().begin("ota_result", false);
                                 _hal.nvs().clear();
                                 _hal.nvs().end();
@@ -988,12 +993,9 @@ namespace ZenoPCB
                     ZENO_LOG_VERBOSE("[5] ZKey publish timer reset (stabilization delay)");
                 }
 
-                ZENO_LOG_VERBOSE("MQTT subscriptions completed"); });
+                ZENO_LOG_VERBOSE("MQTT subscriptions completed"); };
+            _mqtt->onConnected(_mqttConnectHandler);
 
-            // ============================================
-            // Setup UNIFIED MQTT onMessage Callback
-            // MUST handle ALL message routing in ONE place
-            // ============================================
             ZENO_LOG_VERBOSE("Setting up unified MQTT onMessage callback...");
             _mqtt->onMessage([this](const String &topic, const String &payload)
                              {
@@ -1072,7 +1074,7 @@ namespace ZenoPCB
                 }
                 
 #if defined(ESP32)
-                // 4.7. Irrigation Config Handler (V3: shared /config topic) ESP32-only (D-03)
+                // 4.7. Irrigation Config Handler (V3: shared /config topic) ESP32-only
                 // Must come AFTER /alarm/config check (which also endsWith /config)
                 else if (_irrigationEnabled && topic.endsWith("/config")) {
                     // Shared /config topic verify type field
@@ -1104,8 +1106,8 @@ namespace ZenoPCB
                 // was wrapped in `#if defined(ESP32)` because it coupled with
                 // Modbus write and GET_ALL telemetry, which silently dropped
                 // every cloud-down ZKey command on ESP8266 / UNO R4 / STM32.
-                // - Modbus writes + GET_ALL polling stay ESP32-only (Plan 06-03
-                // D-03 RegisterPollingEngine is ESP32-only).
+                // Modbus writes + GET_ALL polling stay ESP32-only (
+                // RegisterPollingEngine is ESP32-only).
                 else if (topic.endsWith("/control")) {
                     ZENO_LOG_VERBOSE("Routing /control message");
 
@@ -1183,6 +1185,11 @@ namespace ZenoPCB
                 } });
 
             ZENO_LOG_VERBOSE("Unified MQTT callbacks registered");
+
+            if (_mqtt->isConnected())
+            {
+                _mqttConnectHandler();
+            }
         }
 
         ZENO_LOG_CORE("Initialized");
@@ -1381,7 +1388,7 @@ namespace ZenoPCB
         else
         {
             // Simple WiFi monitoring when not using provisioning.
-            // Pattern H gate: STM32F4 default-Ethernet has no WiFi.h so
+            // gate: STM32F4 default-Ethernet has no WiFi.h so
             // status polling is skipped provider abstraction is mandatory.
 #if defined(ESP32) || defined(ESP8266) || defined(ARDUINO_UNOR4_WIFI) || defined(STM32F1xx)
             static bool wasConnected = false;
@@ -1423,7 +1430,7 @@ namespace ZenoPCB
 
 #if defined(ESP32)
         // Process Modbus system + MQTTControlHandler (runs during OTA RTU=Serial1, TCP=Ethernet)
-        // ESP32-only per Plan 06-03 D-03 (Modbus subsystem stripped on ESP8266).
+        // ESP32-only (Modbus subsystem stripped on ESP8266).
         if (!apActive)
         {
             loopModbusSystem();
@@ -1471,7 +1478,7 @@ namespace ZenoPCB
 
 #if defined(ESP32)
         // Process Irrigation module (scheduler time-checking + executor state machine)
-        // ESP32-only per Plan 06-03 D-03.
+        // ESP32-only.
         if (!apActive && _irrigationEnabled)
         {
             static unsigned long lastIrrigationCheck = 0;
@@ -1593,7 +1600,7 @@ namespace ZenoPCB
 
 #if defined(ESP32)
         // Periodic Modbus telemetry publishing (runs during OTA JSON build local, MQTT publish t fail nu disconnected)
-        // ESP32-only per Plan 06-03 D-03 (Modbus subsystem stripped on ESP8266).
+        // ESP32-only (Modbus subsystem stripped on ESP8266).
         static unsigned long lastTelemetryPrint = 0;
         auto &modbusBuffer = ModbusDataBuffer::getInstance();
         // Periodic publish: only when there is at least one publishable (VALID / fresh stale) value.
@@ -1624,10 +1631,10 @@ namespace ZenoPCB
                 {
                     const int CHUNK_SIZE = 50;
 
-                    // Phase 3 Plan 03-02 hot-path refactor: build the topic ONCE
+                    // hot-path refactor: build the topic ONCE
                     // into a stack buffer (every branch below targets the same topic).
                     // THREAD-NOTE: _deviceToken is set once at provisioning and never
-                    // mutated post-begin(); .c_str() is stable here. (RESEARCH.md Pitfall #3)
+                    // mutated post-begin;.c_str is stable here. (RESEARCH.md)
                     char chunkTopicBuf[128]; // matches MQTTClient::_brokerStable convention
                     int ctn = snprintf(chunkTopicBuf, sizeof(chunkTopicBuf),
                                        "v1/devices/%s/telemetry", _deviceToken.c_str());
@@ -1655,7 +1662,7 @@ namespace ZenoPCB
                                 // 4G OTA active queue for yield callback.
                                 // Cold path: one-time String wrap at the queue boundary
                                 // is acceptable per RESEARCH.md Risk R2 (QueuedMQTTMessage
-                                // out of scope for Plan 03-02).
+                                // out of scope for).
                                 _enqueueMQTT(String(chunkTopicBuf), telemetryJson);
                                 ZENO_LOG_CORE("Modbus telemetry queued (%d keys) will flush at OTA yield", totalKeys);
                             }
@@ -1691,7 +1698,7 @@ namespace ZenoPCB
                                 {
                                     chunkCount++;
 
-                                    // Phase 3 Plan 03-02: serialize chunk into stack
+                                    // : serialize chunk into stack
                                     // buffer instead of String. RESEARCH.md A1: chunk JSON
                                     // is bounded by MQTT_MAX_PAYLOAD + CHUNK_SIZE=50 keys
                                     // (typical < 256 B); 512 = 2x headroom under CLAUDE.md.
@@ -1760,27 +1767,14 @@ namespace ZenoPCB
         // When 4G OTA queue mode: ZKey publish goes through queue
         if (!apActive && _zKeysEnabled)
         {
+            ZenoTimer::getInstance().runDue(millis());
+
             auto &zBuffer = ZKeyBuffer::getInstance();
 
             if (zBuffer.isPublishDue())
             {
-                // Timer-only reset (NOT markPublished). markPublishTimer()
-                // preserves any values the user wrote between intervals; the
-                // dirty clear happens in _publishZKeyTelemetry() after a
-                // successful publish.
                 zBuffer.markPublishTimer();
-
-                // ZENO_EVERY dispatch — fire any periodic block whose
-                // interval has elapsed. Replaces the v0.3 _zKeyReadCallback
-                // (ZENO_READ_ALL) which was a single global producer.
-                ZenoTimer::getInstance().runDue(millis());
-
-                bool shouldPublish = zBuffer.isInstantPublishPending() || zBuffer.hasDirtyKeys();
-
-                if (shouldPublish)
-                {
-                    _publishZKeyTelemetry();
-                }
+                _publishZKeyTelemetry();
 
 #if !defined(ZENOPCB_DISABLE_ALARM)
                 // Alarm check runs independently of dirty state:
@@ -1840,7 +1834,7 @@ namespace ZenoPCB
 
         if (_wifiConfigured)
         {
-            // Pattern H gate: WiFi.disconnect/begin unavailable on F4 Ethernet path.
+            // gate: WiFi.disconnect/begin unavailable on F4 Ethernet path.
 #if defined(ESP32) || defined(ESP8266) || defined(ARDUINO_UNOR4_WIFI) || defined(STM32F1xx)
             WiFi.disconnect();
             delay(100);
@@ -1862,7 +1856,7 @@ namespace ZenoPCB
         {
             return _networkProvider->isConnected();
         }
-        // Pattern H gate: F4 default-Ethernet has no WiFi.h; in that branch a
+        // gate: F4 default-Ethernet has no WiFi.h; in that branch a
         // provider is mandatory, so reaching here means not-connected.
 #if defined(ESP32) || defined(ESP8266) || defined(ARDUINO_UNOR4_WIFI) || defined(STM32F1xx)
         return WiFi.status() == WL_CONNECTED;
@@ -1926,7 +1920,7 @@ namespace ZenoPCB
 
     String Zeno::getIP() const
     {
-        // Pattern H gate: F4 default-Ethernet has no WiFi.h.
+        // gate: F4 default-Ethernet has no WiFi.h.
 #if defined(ESP32) || defined(ESP8266) || defined(ARDUINO_UNOR4_WIFI) || defined(STM32F1xx)
         if (WiFi.status() == WL_CONNECTED)
         {
@@ -1961,7 +1955,7 @@ namespace ZenoPCB
         // Users only need DEVICE_ID + DEVICE_TOKEN - no broker config needed.
         // Only apply defaults if broker not already explicitly set.
         //
-        // Lookup precedence (Phase 5 D-14, layered):
+        // Lookup precedence (, layered)
         // 1. Runtime .mqtt(host, port) override already populated _mqttBroker
         // BEFORE this code runs (e.g. ZMG-01 / ZF-01 firmware).
         // 2. Compile-time -DZENOPCB_BROKER_HOST="..." build flag (advanced
@@ -2009,14 +2003,14 @@ namespace ZenoPCB
     void Zeno::_initProvisioning()
     {
 #if defined(ZENOPCB_DISABLE_PROVISIONING)
-        // Plan 07-06.6 MICRO_BASIC: WiFiProvisioning subsystem stripped at compile time.
+        // MICRO_BASIC: WiFiProvisioning subsystem stripped at compile time.
         // _wifiProvisioning stays nullptr; all call sites guard on the same flag.
         _wifiProvisioning = nullptr;
         ZENO_LOG_CORE("[WARN] WiFiProvisioning subsystem disabled at compile time (ZENOPCB_DISABLE_PROVISIONING) captive portal / NVS credentials not available on this build");
         return;
 #else
         // Always create provisioning for button support explicit HAL injection
-        // (Plan 04-05 swaps the default-ctor bridge for `_hal` propagation).
+        // (swaps the default-ctor bridge for `_hal` propagation).
         _wifiProvisioning = new WiFiProvisioning(_hal);
 
         // Forward device credentials that were set before begin()
@@ -2035,14 +2029,14 @@ namespace ZenoPCB
         // Called BEFORE saving config WiFi is in WIFI_AP_STA and connected
         // Tests that the MQTT broker is reachable using device credentials.
         //
-        // Pattern H gate (Plan 07-06.5): STM32F4 default-Ethernet build has no
+        // gate : STM32F4 default-Ethernet build has no
         // WiFi.h equivalent, so the test/claim lambdas (which instantiate a
         // local WiFiClient) skip wiring on that platform the provisioning
         // surface (web server, AP mode) is already a no-op stub there.
 #if defined(ESP32) || defined(ESP8266) || defined(ARDUINO_UNOR4_WIFI) || defined(STM32F1xx)
         _wifiProvisioning->setMQTTTestCallback([this]() -> bool
                                                {
-            // Phase 5 D-14 (layered): runtime override -> build-flag override -> XOR fallback.
+            // (layered): runtime override -> build-flag override -> XOR fallback.
 #ifdef ZENOPCB_BROKER_HOST
             String broker = _mqttBroker.length() == 0 ? String(ZENOPCB_BROKER_HOST) : _mqttBroker;
 #ifdef ZENOPCB_BROKER_PORT
@@ -2090,7 +2084,7 @@ namespace ZenoPCB
         // WiFi is still in AP_STA mode and connected when this is called.
         _wifiProvisioning->setClaimCallback([this](const String &userId, const String &deviceId, const String &token) -> bool
                                             {
-            // Phase 5 D-14 (layered): runtime override -> build-flag override -> XOR fallback.
+            // (layered): runtime override -> build-flag override -> XOR fallback.
 #ifdef ZENOPCB_BROKER_HOST
             String broker = _mqttBroker.length() == 0 ? String(ZENOPCB_BROKER_HOST) : _mqttBroker;
 #ifdef ZENOPCB_BROKER_PORT
@@ -2121,7 +2115,7 @@ namespace ZenoPCB
             s_claimAckSuccess = false;
 
             // Set message callback BEFORE connect (non-capturing required
-            // for strict-conversion toolchains; Phase 7 Area E).
+            // for strict-conversion toolchains;).
             claimMqtt.setCallback(+[](char* topic, byte* payload, unsigned int length) {
                 (void)topic;
                 String msg;
@@ -2271,7 +2265,7 @@ namespace ZenoPCB
     void Zeno::_initMQTT()
     {
         // Use default cloud broker if user did not call .mqtt()
-        // Phase 5 D-14 (layered): runtime override -> build-flag override -> XOR fallback.
+        // (layered): runtime override -> build-flag override -> XOR fallback.
         if (!_mqttEnabled || _mqttBroker.length() == 0)
         {
 #ifdef ZENOPCB_BROKER_HOST
@@ -2300,7 +2294,7 @@ namespace ZenoPCB
             if (_tlsEnabled && _wifiClientSecure)
             {
                 _mqtt->brokerTLS(_mqttBroker, _mqttPort);
-                // Phase 7 D-27 if user pinned a PEM root CA via setRootCA(),
+                // if user pinned a PEM root CA via setRootCA
                 // use setCACert() on ESP32 for verified TLS. Otherwise fall
                 // back to setInsecure() dev-mode behaviour. ESP8266 BearSSL
                 // needs a parsed BearSSL::X509List (deferred logs WARN
@@ -2311,7 +2305,7 @@ namespace ZenoPCB
                     _wifiClientSecure->setCACert(_rootCA);
                     ZENO_LOG_CORE("TLS root CA pinned via setCACert (ESP32)");
 #elif defined(ESP8266)
-                    ZENO_LOG_CORE("[WARN] ESP8266 BearSSL root CA pinning requires user-constructed BearSSL::X509List falling back to setInsecure (D-27 note)");
+                    ZENO_LOG_CORE("[WARN] ESP8266 BearSSL root CA pinning requires user-constructed BearSSL::X509List falling back to setInsecure");
                     _wifiClientSecure->setInsecure();
 #else
                     ZENO_LOG_CORE("[WARN] Root CA pinning not implemented on this platform setInsecure fallback");
@@ -2361,7 +2355,7 @@ namespace ZenoPCB
         }
         else
         {
-            // Pattern H gate: F4 default-Ethernet has no WiFi.h, so the
+            // gate: F4 default-Ethernet has no WiFi.h, so the
             // network-check lambda there returns the AP-mode guard only
             // (which on F4 is permanently false since provisioning is a
             // no-op stub) effectively disabling MQTT auto-reconnect
@@ -2417,7 +2411,7 @@ namespace ZenoPCB
         else
         {
             // Use network provider client if available, otherwise WiFi.
-            // Pattern H gate: STM32F4 default-Ethernet has no WiFi.h /
+            // gate: STM32F4 default-Ethernet has no WiFi.h /
             // `WiFiClient`, so the fallback path is dropped and provider
             // is mandatory there (see ZenoPCB.h member declaration guard).
             if (_networkProvider)
@@ -2847,11 +2841,14 @@ namespace ZenoPCB
         auto &buffer = ZKeyBuffer::getInstance();
 
         if (!buffer.hasDirtyKeys())
+        {
+            buffer.markPublished();
             return;
+        }
 
-        // Phase 3 Plan 03-02 hot-path refactor: build the Z-Key payload + topic
+        // hot-path refactor: build the Z-Key payload + topic
         // into stack buffers instead of three heap-allocated Strings per publish.
-        // Pattern from .planning/phases/03-internal-tech-debt-cleanup/03-RESEARCH.md
+        // Pattern from.planning/phases/03-internal-tech-debt-cleanup/
         // Code Example 2; depends on the const char* publish overloads added in 03-01.
 
         // 1. Build JSON into a stack buffer via ArduinoJson serializeJson(doc, char*, size).
@@ -2873,7 +2870,7 @@ namespace ZenoPCB
         // 2. Build topic into stack buffer.
         // THREAD-NOTE: _deviceToken is set once at provisioning (Zeno::setDeviceCredentials
         // / NVS first-boot) and never mutated post-begin(). .c_str() is stable for the
-        // lifetime of this call. (RESEARCH.md Pitfall #3)
+        // lifetime of this call. (RESEARCH.md)
         char topicBuf[128]; // longest topic ~53 B; 128 matches MQTTClient::_brokerStable convention
         int tn = snprintf(topicBuf, sizeof(topicBuf), "v1/devices/%s/telemetry",
                           _deviceToken.c_str());
@@ -2886,7 +2883,7 @@ namespace ZenoPCB
         // 4G OTA: queue instead of direct publish.
         // Cold path (OTA active). One-time String alloc at the queue boundary is
         // acceptable per RESEARCH.md Risk R2 the QueuedMQTTMessage struct still
-        // takes const String& and is explicitly out of scope for Plan 03-02.
+        // takes const String& and is explicitly out of scope for.
         if (_mqttQueueEnabled)
         {
             _enqueueMQTT(String(topicBuf), String(zJsonBuf), MQTTQoS::QOS_1, false);
@@ -2897,7 +2894,7 @@ namespace ZenoPCB
         }
 
         // Hot path direct publish via new char* overload from plan 03-01
-        // (Pitfall #2: must NOT use .c_str() round-trip into the String overload).
+        // (: must NOT use.c_str round-trip into the String overload).
         bool published = _mqtt->publish(topicBuf, zJsonBuf, MQTTQoS::QOS_1, false);
 
         if (published)
@@ -2915,7 +2912,7 @@ namespace ZenoPCB
     void Zeno::_initDiagnostics()
     {
 #if defined(ZENOPCB_DISABLE_DIAGNOSTICS)
-        // Plan 07-06.6 MICRO_BASIC: Diagnostics subsystem stripped at compile time.
+        // MICRO_BASIC: Diagnostics subsystem stripped at compile time.
         if (_diagnosticsEnabled)
         {
             ZENO_LOG_CORE("[WARN] Diagnostics subsystem disabled at compile time (ZENOPCB_DISABLE_DIAGNOSTICS) enableDiagnostics() is a no-op on this build");
@@ -3019,11 +3016,11 @@ namespace ZenoPCB
 
     void Zeno::_initSchedule()
     {
-        // Phase 7 Plan 07-06.6 ZENOPCB_MICRO_BASIC profile compile-strip.
+        // ZENOPCB_MICRO_BASIC profile compile-strip.
         // When `-DZENOPCB_DISABLE_SCHEDULE` is set, the entire Schedule subsystem
         // is gone (TU guards in schedule/*.cpp produce no link symbols). The body
         // below references those symbols, so it must be guarded too. The builder
-        // method `enableSchedule()` is kept (Pattern F: fluent-chain preserved)
+        // method `enableSchedule` is kept (: fluent-chain preserved)
         // but resolves to a silent no-op + one-time warn here.
 #if defined(ZENOPCB_DISABLE_SCHEDULE)
         if (_scheduleEnabled)
@@ -3236,7 +3233,7 @@ namespace ZenoPCB
         return _scheduleExecutor ? _scheduleExecutor->getScheduleCount() : 0;
     }
 
-    // Plan 06-03 Modbus getters preserve their public signature on every
+    // Modbus getters preserve their public signature on every
     // platform (so a publish-all sketch compiles), but the body is
     // ESP32-only. ESP8266 returns 0 because the Modbus subsystem is not
     // available (capability gap; surfaced via _hal.capabilities() if the
@@ -3268,7 +3265,7 @@ namespace ZenoPCB
     // Irrigation Management
     // ============================================
 
-    // Plan 06-03 Pattern F (OQ-1 RESOLVED) enableIrrigation() stays
+    // enableIrrigation stays
     // available on every platform so a publish-all sketch
     // (`zeno.enableIrrigation();`) compiles on ESP8266; on non-ESP32 the
     // body logs a runtime warning and the fluent API still returns *this.
@@ -3285,7 +3282,7 @@ namespace ZenoPCB
 
 #if defined(ESP32)
     // Typed callback setters reference IrrigationWriteCallback/etc. which
-    // live in irrigation/IrrigationTypes.h guarded by D-03 module strip.
+    // live in irrigation/IrrigationTypes.h guarded by.
     Zeno &Zeno::setIrrigationWriteFunction(IrrigationWriteCallback callback)
     {
         _irrigationWriteCallback = callback;
@@ -3311,7 +3308,7 @@ namespace ZenoPCB
     }
 #endif  // ESP32 typed irrigation callback setters
 
-    // Plan 06-03 Pattern F _initIrrigation() body is ESP32-only (touches
+    // _initIrrigation body is ESP32-only (touches
     // IrrigationExecutor/Scheduler/MessageHandler/Storage types). On
     // ESP8266 it is a silent no-op; the user-facing warning was already
     // logged by enableIrrigation() so we do not re-emit.
@@ -3574,7 +3571,7 @@ namespace ZenoPCB
     void Zeno::_initAlarm()
     {
 #if defined(ZENOPCB_DISABLE_ALARM)
-        // Plan 07-06.6 MICRO_BASIC: Alarm subsystem stripped at compile time.
+        // MICRO_BASIC: Alarm subsystem stripped at compile time.
         if (_alarmEnabled)
         {
             ZENO_LOG_CORE("[WARN] Alarm subsystem disabled at compile time (ZENOPCB_DISABLE_ALARM) enableAlarm() is a no-op on this build");
@@ -3850,9 +3847,9 @@ namespace ZenoPCB
         return *this;
     }
 
-    // Pattern G (Phase 7 D-06) fallible OTA trigger. Distinct overload from the
-    // enableOTA() builder above. T-4-03 safe: ESP32 production firmware does NOT
-    // call zeno.ota(url) directly (verified via RESEARCH Pitfall 4 + A8), so this
+    // fallible OTA trigger. Distinct overload from the
+    // enableOTA builder above. safe: ESP32 production firmware does NOT
+    // call zeno.ota(url) directly (verified via RESEARCH + A8), so this
     // additive method does not affect any existing call site.
     ZenoCapability Zeno::ota(const char *url)
     {
@@ -3870,7 +3867,7 @@ namespace ZenoPCB
         // Delegate to the existing ZenoPCBOTA instance the same code path the
         // internal MQTT /ota command handler uses. If the user has not yet called
         // enableOTA() + begin(), _ota is null; return Error rather than crashing
-        // on a null deref. Plan 07-06 may refine this to a stricter Pending /
+        // on a null deref. may refine this to a stricter Pending /
         // Error split for non-ESP32 platforms.
         if (_ota == nullptr)
         {
@@ -3943,7 +3940,7 @@ namespace ZenoPCB
 
         if (!_ota)
         {
-            // Explicit HAL injection (Plan 04-05) replaces the Plan 04-04 bridge.
+            // Explicit HAL injection replaces the bridge.
             _ota = new ZenoPCBOTA(_hal);
         }
 
@@ -4061,7 +4058,7 @@ namespace ZenoPCB
                 String payload;
                 serializeJson(doc, payload);
 
-                // T-4-02: namespace "ota_result" + key "payload" preserved byte-for-byte.
+                // : namespace "ota_result" + key "payload" preserved byte-for-byte.
                 _hal.nvs().begin("ota_result", false);
                 _hal.nvs().putString("payload", payload.c_str());
                 _hal.nvs().end();
@@ -4118,7 +4115,7 @@ namespace ZenoPCB
             } });
 
         // Set network client OTA dng client RING BIT vi MQTT.
-        // Pattern H gate: STM32F4 default-Ethernet has no WiFi.h / `WiFiClient`
+        // gate: STM32F4 default-Ethernet has no WiFi.h / `WiFiClient`
         // member declared, so the fallback branches drop on that platform.
         if (_networkProvider)
         {
@@ -4331,7 +4328,7 @@ namespace ZenoPCB
             {
                 // 4G blocking OTA: MQTT socket ng trc khi OTA
                 // Lu vo NVS s publish sau reboot khi MQTT reconnect
-                // T-4-02: namespace "ota_result" + key "payload" preserved byte-for-byte.
+                // : namespace "ota_result" + key "payload" preserved byte-for-byte.
                 _hal.nvs().begin("ota_result", false);
                 _hal.nvs().putString("payload", payload.c_str());
                 _hal.nvs().end();
@@ -4355,7 +4352,7 @@ namespace ZenoPCB
             // Save to NVS so it can be published after reboot
             if (strcmp(status, "completed") == 0)
             {
-                // T-4-02: namespace "ota_result" + key "payload" preserved byte-for-byte.
+                // : namespace "ota_result" + key "payload" preserved byte-for-byte.
                 _hal.nvs().begin("ota_result", false);
                 _hal.nvs().putString("payload", payload.c_str());
                 _hal.nvs().end();

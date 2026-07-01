@@ -5,23 +5,23 @@
  * @file Esp8266Storage.h
  * @brief ESP8266 concrete impl of IZenoStorage  wraps ESP8266 LittleFS.
  *
- * Mechanical mirror of Esp32Storage.{h,cpp} from Phase 4 (Plan 04-02).
- * See .planning/phases/06-esp8266-port/06-PATTERNS.md Pattern A.
+ * Mechanical mirror of Esp32Storage.{h,cpp} from.
+ * See.planning/phases/06-esp8266-port/.
  *
  * `<LittleFS.h>` is the canonical include name on both ESP32 (Arduino
  * Core 3.x) and ESP8266 (Arduino Core 3.x.x); no platform switch is
  * needed here. The `writeFile` body diverges from the ESP32 analog by
  * calling a `.cpp`-local `ensureParentDirs(path)` helper before opening
- * (Pitfall 1  ESP8266 LittleFS does not auto-create parent dirs).
+ * (ESP8266 LittleFS does not auto-create parent dirs).
  *
- * Deleted copy semantics per Pitfall 3 (LittleFS is process-global
+ * Deleted copy semantics per (LittleFS is process-global
  * state  duplicating the wrapper duplicates the mount reference).
  */
 
 #include "../IZenoStorage.h"
 
-// Pattern B/Pitfall 7 lifted to .h surface (Plan 06-2.5d, replicates the fix
-// applied in Plan 06-2.5a to Esp8266NVS.h): although `<LittleFS.h>` resolves
+// / lifted to.h surface (, replicates the fix
+// applied in to Esp8266NVS.h): although `<LittleFS.h>` resolves
 // on both ESP32 and ESP8266 Arduino Core, the resolved file is platform-
 // specific (different class implementations, header guard collisions
 // possible). PIO's library scanner indexes this header on every env; guarding
@@ -40,7 +40,7 @@ public:
     Esp8266Storage() = default;
     ~Esp8266Storage() override = default;
 
-    // Deleted copy semantics (Pitfall 3 LittleFS is process-global state).
+    // Deleted copy semantics (LittleFS is process-global state).
     Esp8266Storage(const Esp8266Storage&) = delete;
     Esp8266Storage& operator=(const Esp8266Storage&) = delete;
 

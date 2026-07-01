@@ -15,7 +15,7 @@ namespace ZenoPCB {
 // (= 0x1C). CAP_OTA is conditionally OR'd in via the `#ifdef` inside the
 // inline body; the static_assert below double-anchors the baseline to the
 // call-site so a future edit cannot silently desync the two surfaces.
-// CAP_FS_FILES is deliberately omitted per CONTEXT D-10 (no LittleFS on
+// CAP_FS_FILES is deliberately omitted per CONTEXT (no LittleFS on
 // RA4M1).
 static_assert(
     (IZenoHal::CAP_NVS | IZenoHal::CAP_NTP | IZenoHal::CAP_WATCHDOG) == 0x1Cu,

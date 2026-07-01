@@ -72,7 +72,7 @@ namespace ZenoPCB
          * @brief Construct ZenoPCBOTA with an injected HAL.
          * @param hal Hardware abstraction layer (provides ota() + system()).
          *            Defaults to the canonical ESP32 HAL singleton via the
-         *            inline default in ZenoPCBOTA.cpp (bridge  Plan 04-05
+         * inline default in ZenoPCBOTA.cpp (bridge
          *            will swap callers to pass `_hal` explicitly).
          */
         ZenoPCBOTA(IZenoHal &hal);

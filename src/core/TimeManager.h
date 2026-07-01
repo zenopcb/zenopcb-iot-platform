@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include <time.h>
-// Phase 7 Plan 07-06.5 (Area C follow-up) `<sys/time.h>` is incomplete
+// (follow-up) `<sys/time.h>` is incomplete
 // on Renesas (UNO R4) toolchain: `struct timeval` is forward-declared
 // without a definition, so any TU that includes TimeManager.h fails to
 // compile downstream. ESP32 / ESP8266 / STM32 newlib all provide a
@@ -12,7 +12,7 @@
 #if defined(ESP32) || defined(ESP8266) || defined(STM32F1xx) || defined(STM32F4xx)
   #include <sys/time.h>
 #endif
-// Plan 06-03 OQ-4 RESOLVED esp_sntp.h is an ESP-IDF header that does
+// esp_sntp.h is an ESP-IDF header that does
 // not exist on ESP8266. ESP8266 lwIP SNTP works via configTime() alone;
 // no equivalent to sntp_set_sync_mode() is needed because the ESP8266
 // SNTP backend defaults to immediate sync semantics.

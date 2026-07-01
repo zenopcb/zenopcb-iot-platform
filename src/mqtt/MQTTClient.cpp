@@ -369,7 +369,7 @@ namespace ZenoPCB
 
     bool MQTTClient::publish(const char *topic, const char *payload, MQTTQoS qos, bool retain)
     {
-        // Null-pointer guard - Threat T-3-02 mitigation per PLAN
+        // Null-pointer guard - Threat mitigation per PLAN
         if (!topic || !payload)
         {
             return false;

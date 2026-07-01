@@ -5,7 +5,7 @@
                   2017-2021 Alexander Emelianov (a.m.emelianov@gmail.com)
 */
 
-// Plan 06-03 D-03 entire Modbus subsystem is ESP32-only. PIO's
+// entire Modbus subsystem is ESP32-only. PIO's
 // library scanner indexes all .cpp under lib/ZenoPCB/src/, so this TU
 // guard reduces the file to an empty translation unit on ESP8266.
 #if defined(ESP32)
@@ -932,4 +932,4 @@ namespace std {
 }
 #endif
 
-#endif  // Plan 06-03 D-03 defined(ESP32)
+#endif  // defined(ESP32)

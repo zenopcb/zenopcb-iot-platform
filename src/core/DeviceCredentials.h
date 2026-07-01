@@ -14,7 +14,7 @@ namespace ZenoPCB
      * - T ng lu vo NVS
      * - c t NVS khi khi ng
      *
-     * Plan 04-03  NVS access routes through `IZenoNVS` via constructor
+     * NVS access routes through `IZenoNVS` via constructor
      * injection. The legacy default-constructor is retained as a thin
      * wrapper that uses the canonical ESP32 HAL singleton  preserves
      * source compatibility for existing main.cpp / zf01_main.cpp callers
@@ -34,7 +34,7 @@ namespace ZenoPCB
      * ```
      *
      * NVS namespace + keys preserved byte-for-byte from pre-refactor
-     * code (T-4-02  see 04-03-AUDIT.md 1.2).
+     * code (see 1.2).
      */
     class DeviceCredentials
     {

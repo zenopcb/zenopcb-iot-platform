@@ -82,33 +82,16 @@
 // ============================================================================
 // ZENO_EVERY(intervalMs) { ... }
 //
-// Run a block periodically every `intervalMs` milliseconds. Self-registers
-// at static-init time — NO need to call .every() / .onZKeyRead() in setup().
+// Run + publish the block every `intervalMs` milliseconds. Self-registers at
+// static-init time; place at FILE SCOPE only.
 //
-// Interval is auto-clamped to >= 1000ms (1 Hz floor) to protect the MQTT
-// broker from spam. Writing ZENO_EVERY(500) silently runs at 1000ms.
+//     ZENO_EVERY(5000) { DEVICE_TO_CLOUD(Z0, analogRead(A0)); }
+//     ZENO_EVERY(1000) { DEVICE_TO_CLOUD(Z1, digitalRead(2));  }
 //
-// Usage at FILE SCOPE (outside any function):
-//
-//     ZENO_EVERY(5000) {
-//         DEVICE_TO_CLOUD(Z0, analogRead(A0));
-//     }
-//
-//     ZENO_EVERY(1000) {
-//         DEVICE_TO_CLOUD(Z1, digitalRead(2));
-//     }
-//
-// IMPORTANT: must be at file scope. Inside a function the compiler will
-// reject the anonymous namespace expansion (intentional safety guard).
-//
-// GET_ALL behaviour: when the cloud sends `{"get_all":true}`, the library
-// fires EVERY registered ZENO_EVERY block immediately so the response
-// telemetry includes a fresh snapshot of every periodic signal.
+// Minimum interval: 1000ms.
+// GET_ALL: cloud requests fire every registered block immediately.
 // ============================================================================
 
-// Indirection macros — force __LINE__ to expand BEFORE the ## paste so
-// multiple ZENO_EVERY blocks in the same translation unit don't collide on
-// the literal token `__LINE__`.
 #define _ZENO_PASTE_INNER(a, b) a##b
 #define _ZENO_PASTE(a, b) _ZENO_PASTE_INNER(a, b)
 

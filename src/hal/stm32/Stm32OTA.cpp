@@ -9,8 +9,8 @@ namespace ZenoPCB {
 bool Stm32OTA::begin(size_t, const char *) {
     // CAP_OTA=0 STM32 OTA requires a custom bootloader (dual-bank flash
     // + IAP write + reset-to-bootloader handshake) which is explicitly
-    // out of v1.0.0 scope per 07-CONTEXT D-12. Surfaces platform gap;
-    // capability-gated callers (post-Pattern G in Plan 07-06) receive
+    // out of v1.0.0 scope per. Surfaces platform gap;
+    // capability-gated callers (post- in) receive
     // ZenoCapability::Unavailable before reaching this stub.
     ZENO_LOG_CORE("[WARN] Stm32OTA: not available custom bootloader required");
     return false;

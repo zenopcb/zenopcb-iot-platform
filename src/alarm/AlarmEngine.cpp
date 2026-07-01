@@ -1,4 +1,4 @@
-// Phase 7 Plan 07-06.6 TU guard for ZENOPCB_MICRO_BASIC profile.
+// TU guard for ZENOPCB_MICRO_BASIC profile.
 #if !defined(ZENOPCB_DISABLE_ALARM)
 
 #include "AlarmEngine.h"

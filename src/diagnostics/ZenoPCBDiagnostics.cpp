@@ -1,11 +1,11 @@
-// Phase 7 Plan 07-06.6 TU guard for ZENOPCB_MICRO_BASIC profile.
+// TU guard for ZENOPCB_MICRO_BASIC profile.
 #if !defined(ZENOPCB_DISABLE_DIAGNOSTICS)
 
 #include "ZenoPCBDiagnostics.h"
 #include "../mqtt/ZenoPCBMQTT.h"
 #include "../core/ZenoPCBDebug.h"
-// Plan 06-03 platform HAL bridge picks the canonical singleton for
-// the current target. Plan 04-05 will swap this to ctor-injected
+// platform HAL bridge picks the canonical singleton for
+// the current target. will swap this to ctor-injected
 // IZenoHal& and remove the bridge entirely.
 #if defined(ESP32)
   #include "../hal/esp32/Esp32Hal.h"
@@ -26,7 +26,7 @@ namespace ZenoPCB
           _mqttWasConnected(false)
     {
         // Create collector and handler. Pass the canonical platform HAL
-        // singleton for now; Plan 04-05 swaps ZenoPCBDiagnostics to
+        // singleton for now; swaps ZenoPCBDiagnostics to
         // receive IZenoHal& via its ctor so the bridge can be removed.
 #if defined(ESP32)
         _collector = new DiagnosticsCollector(getEsp32Hal(), deviceInfo);

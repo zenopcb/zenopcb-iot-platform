@@ -42,7 +42,7 @@ uint32_t UnoR4System::getFreeHeap() {
 #else
     // PLACEHOLDER surface 0 so consumers see a "no heap stats
     // available" signal rather than a stale-but-plausible number.
-    // Plan 07-09 UAT hardware spike replaces this if mallinfo is
+    // UAT hardware spike replaces this if mallinfo is
     // unavailable on the shipped Renesas core.
     return 0;
 #endif
@@ -51,7 +51,7 @@ uint32_t UnoR4System::getFreeHeap() {
 uint32_t UnoR4System::getMaxAllocHeap() {
 #if defined(ZENOPCB_HAS_MALLINFO)
     // newlib-nano does not expose largest-free-block directly; use the
-    // free-blocks total as a conservative upper bound. Plan 07-09 UAT
+    // free-blocks total as a conservative upper bound. UAT
     // hardware spike refines this if the allocator exposes a richer API.
     struct mallinfo info = mallinfo();
     return static_cast<uint32_t>(info.fordblks);
@@ -62,7 +62,7 @@ uint32_t UnoR4System::getMaxAllocHeap() {
 
 uint32_t UnoR4System::getTotalHeap() {
     // RA4M1 DRAM total is 32 KB (hardcoded, RESEARCH UNO R4 spike).
-    // Same pattern as Esp8266System::getTotalHeap() Pitfall 4: there is
+    // Same pattern as Esp8266System::getTotalHeap : there is
     // no `ESP.getHeapSize()` analog and the link-time partition is
     // platform-fixed. The DiagnosticsCollector formula
     // `used = getTotalHeap() - getFreeHeap()` is therefore an
@@ -76,7 +76,7 @@ size_t UnoR4System::getUniqueId(char *out, size_t outSize) {
 
     // RA4M1 has a 128-bit unique ID accessible via the Renesas FSP
     // `R_FACI_LP_*` API (`R_BSP_UniqueIdGet()` is the umbrella accessor
-    // in some FSP versions). Wave 1 spike (planner Plan 07-09 UAT) will
+    // in some FSP versions). Wave 1 spike (planner UAT) will
     // confirm the exact API path. Until then, this is a deterministic
     // PLACEHOLDER so the surface compiles and existing
     // WiFiProvisioning + DeviceCredentials call sites expecting an
@@ -108,14 +108,14 @@ void UnoR4System::feedWatchdog() {
     // `WatchdogTimer.begin(...)`.
     //
     // Wave 1 spike confirms exact symbol name + header path
-    // (07-RESEARCH Standard Stack row 143 logs `WatchdogTimer` as the
+    // (Standard Stack row 143 logs `WatchdogTimer` as the
     // observed symbol on the shipped ArduinoCore-renesas). Until the
     // spike confirms the include path, we leave this body as a
     // no-op-compatible placeholder so the surface compiles and the
     // CAP_WATCHDOG capability bit honours its "call is safe but may
     // be a no-op while spike is pending" contract.
     //
-    // TODO (Plan 07-09 UAT): once `<WDT.h>` (or the actual header) is
+    // TODO (UAT): once `<WDT.h>` (or the actual header) is
     // confirmed on hardware, replace this no-op with the live
     // `WatchdogTimer.refresh()` call.
 }

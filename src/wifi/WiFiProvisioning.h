@@ -1,15 +1,15 @@
 #ifndef WIFI_PROVISIONING_H
 #define WIFI_PROVISIONING_H
 
-// Plan 06-03 Pitfall 5 + Pattern 2 platform-specific WiFi + WebServer
+// + platform-specific WiFi + WebServer
 // headers. ESP8266 lacks a class literally named `WebServer`, so we expose
 // a typedef bridge `using WebServer = ESP8266WebServer;` at namespace
 // scope. Downstream member declarations (`WebServer *_webServer;`) and
 // the `.cpp` constructor (`new WebServer(...)`) resolve identically on
 // both platforms via this alias.
 //
-// Phase 7 Plan 07-06 switch extended to UNO R4 + STM32 arms. Per Pattern H
-// (07-PATTERNS.md "Whole-Class Capability Gate"), WiFiProvisioning has no
+// switch extended to UNO R4 + STM32 arms. Per
+// ("Whole-Class Capability Gate"), WiFiProvisioning has no
 // HTTP-server analog on those platforms (3-week UNO R4 captive-portal port
 // deferred to v0.4.0; STM32 has no AP-mode hardware). The class still
 // compiles on those targets via stub method bodies see WiFiProvisioning.cpp.
@@ -23,11 +23,11 @@
 #elif defined(ARDUINO_UNOR4_WIFI)
   #include <WiFiS3.h>
   // WiFiS3 has WiFiServer but no ESP8266WebServer / WebServer-shaped HTTP
-  // server analog. Pattern H WiFiProvisioning methods stub to failure on
+  // server analog. WiFiProvisioning methods stub to failure on
   // UNO R4 per RESEARCH Architectural Responsibility Map.
   class WebServer;  // Forward decl so `WebServer *_webServer;` member compiles.
 #elif defined(STM32F1xx) || defined(STM32F4xx)
-  // Pattern H no AP-mode hardware on STM32 (Ethernet F4 / ESP-AT F1).
+  // no AP-mode hardware on STM32 (Ethernet F4 / ESP-AT F1).
   // WiFiProvisioning methods stub to failure.
   class WebServer;  // Forward decl so `WebServer *_webServer;` member compiles.
 #endif
@@ -53,7 +53,7 @@ namespace ZenoPCB
     {
     public:
         /**
-         * @brief Construct with explicit HAL reference (Plan 04-03).
+         * @brief Construct with explicit HAL reference.
          */
         explicit WiFiProvisioning(IZenoHal &hal);
 

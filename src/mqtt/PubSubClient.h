@@ -6,7 +6,7 @@
 // Original Copyright (c) Nicholas O'Leary.
 // Licensed under MIT see lib/ZenoPCB/src/mqtt/VENDORED.md.
 //
-// Plan 06-2.5c (2026-06-02): class renamed from `PubSubClient`
+// (2026-06-02): class renamed from `PubSubClient`
 // to `ZenoPubSubClient` to claim as ZenoPCB internal component.
 // File name + header guard `PubSubClient_h` preserved (unique token).
 

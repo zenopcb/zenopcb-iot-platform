@@ -1,4 +1,4 @@
-// Phase 7 Plan 07-06.6 TU guard for ZENOPCB_MICRO_BASIC profile (F103 budget fit).
+// TU guard for ZENOPCB_MICRO_BASIC profile (F103 budget fit).
 // When `-DZENOPCB_DISABLE_SCHEDULE` is set, the entire Schedule subsystem TU compiles
 // to an empty translation unit no link symbols emitted, no Flash overhead.
 #if !defined(ZENOPCB_DISABLE_SCHEDULE)
@@ -8,7 +8,7 @@
 #include "../core/ZenoPCBDebug.h"
 #include "../core/ZKeyBuffer.h"
 
-// Plan 06-3.5: Modbus IO is ESP32-only. Headers + Modbus call sites are guarded
+// : Modbus IO is ESP32-only. Headers + Modbus call sites are guarded
 // at the call-site level so this TU compiles on ESP8266 (Schedule management +
 // ZKey path remain fully functional; Modbus rid paths degrade to a logged failure).
 #if defined(ESP32)

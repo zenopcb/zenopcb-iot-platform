@@ -2,7 +2,7 @@
 #define ZENOPCB_SCHEDULE_CONFIG_H
 
 #include <Arduino.h>
-#include <time.h>  // Phase 7 Plan 07-06.5 `time()` is used in markExecuted();
+#include <time.h>  // `time` is used in markExecuted;
                    // Renesas (UNO R4) doesn't bring it in transitively.
 #include "ScheduleTypes.h"
 

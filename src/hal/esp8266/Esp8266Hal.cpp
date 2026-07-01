@@ -4,7 +4,7 @@
 
 namespace ZenoPCB {
 
-// Pitfall 7 Meyers singleton. Lazy, thread-safe in C++11+, and lives
+// Meyers singleton. Lazy, thread-safe in C++11+, and lives
 // as a single symbol in this translation unit so the instance is shared
 // across every consumer that includes Esp8266Hal.h. Crucially, the static
 // is FUNCTION-local, not file-scope, so no constructor runs before
@@ -12,8 +12,8 @@ namespace ZenoPCB {
 //
 // Capabilities sanity check (compile-time): the bitmask returned by
 // Esp8266Hal::capabilities() must equal CAP_FS_FILES | CAP_OTA | CAP_NVS |
-// CAP_NTP | CAP_WATCHDOG | CAP_CAPTIVE_PORTAL (Phase 7 Plan 07-06 extended
-// Esp8266Hal with the captive-portal bit so Pattern G fallible
+// CAP_NTP | CAP_WATCHDOG | CAP_CAPTIVE_PORTAL (extended
+// Esp8266Hal with the captive-portal bit so fallible
 // wifiProvisioning() proceeds to delegation on ESP8266). This is enforced
 // inline in the header impl; the static_assert below double-anchors that
 // to the call-site so a future edit cannot silently desync the two

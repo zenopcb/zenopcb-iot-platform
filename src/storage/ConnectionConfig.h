@@ -290,12 +290,12 @@ namespace ZenoPCB
         }
 
         // === Debug Output ===
-        // Phase 7 Plan 07-05 body guarded to ESP32/ESP8266 only because
+        // body guarded to ESP32/ESP8266 only because
         // `Serial.printf` is not portable: UNO R4 (Renesas `UART` class) and
         // STM32duino (`HardwareSerial`) do not expose it. The function stays
         // declared on all platforms (ABI/call-site preserved) but the body is
-        // a no-op on UNO R4 / STM32. Consistent with Phase 6 Pattern B /
-        // Phase 7 Plan 07-06 Pattern H whole-class TU gates: keep the
+        // a no-op on UNO R4 / STM32. Consistent with /
+        // whole-class TU gates: keep the
         // ESP32/ESP8266 surface byte-identical, stub on new ports.
         void printDebug() const
         {
@@ -337,7 +337,7 @@ namespace ZenoPCB
 #else
             // Body intentionally empty on UNO R4 / STM32 (no portable
             // Serial.printf). Debug output for these platforms lives in
-            // the per-port HAL diagnostics surface (Plan 07-09 UAT).
+            // the per-port HAL diagnostics surface (UAT).
             (void)0;
 #endif
         }

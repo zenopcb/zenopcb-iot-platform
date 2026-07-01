@@ -6,22 +6,22 @@
  * @brief Arduino UNO R4 WiFi (Renesas RA4M1) concrete impl of IZenoTime 
  *        wraps WiFiS3's native `WiFi.getTime()` NTP helper.
  *
- * Mechanical Pattern A mirror of Esp8266Time.{h,cpp} (Plan 06-01) with the
+ * Mechanical mirror of Esp8266Time.{h,cpp} with the
  * body diverged entirely: WiFiS3 ships a self-contained NTP path that
  * returns Unix epoch seconds directly from the ESP32-S3 co-processor
- * (UNO R4's onboard companion  see 07-RESEARCH UNO R4 hardware note).
+ * (UNO R4's onboard companion see UNO R4 hardware note).
  * No `configTime()` / lwIP SNTP boilerplate.
  *
- * See .planning/phases/07-uno-r4-stm32-ports-capability-matrix/07-PATTERNS.md
+ * See.planning/phases/07-uno-r4-stm32-ports-capability-matrix/
  * "UnoR4Time" (lines 624-680).
  *
- * Deleted copy semantics for Pitfall 3 hygiene  global SNTP-style state
+ * Deleted copy semantics for hygiene global SNTP-style state
  * lives inside the WiFiS3 co-processor RPC layer.
  */
 
 #include "../IZenoTime.h"
 
-// Pattern B/Pitfall 7 lifted to .h surface (Plan 06-2.5d carry-forward):
+// / lifted to.h surface (carry-forward)
 // `<WiFiS3.h>` is the WiFi co-processor library for UNO R4 only; it does
 // not exist on ESP32 / ESP8266 cores. Guarding the include + class body
 // at the header surface keeps PIO's library scanner from failing on the
@@ -40,7 +40,7 @@ public:
     UnoR4Time() = default;
     ~UnoR4Time() override = default;
 
-    // Deleted copy semantics (Pitfall 3 WiFiS3 RPC state is process-
+    // Deleted copy semantics (WiFiS3 RPC state is process-
     // global; duplicating the wrapper risks racing two `syncNTP` callers
     // against the same co-processor link).
     UnoR4Time(const UnoR4Time&) = delete;

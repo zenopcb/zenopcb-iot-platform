@@ -1,4 +1,4 @@
-// Phase 7 Plan 07-06.6 TU guard for ZENOPCB_MICRO_BASIC profile.
+// TU guard for ZENOPCB_MICRO_BASIC profile.
 #if !defined(ZENOPCB_DISABLE_DIAGNOSTICS)
 
 #include "DiagnosticsCollector.h"
@@ -148,7 +148,7 @@ namespace ZenoPCB
 #endif
 
         // Check WiFi connection.
-        // Pattern H gate: STM32F4 default-Ethernet has no WiFi.h; the
+        // gate: STM32F4 default-Ethernet has no WiFi.h; the
         // diagnostics IP collection falls through to the not-connected
         // sentinel in that branch.
 #if defined(ESP32) || defined(ESP8266) || defined(ARDUINO_UNOR4_WIFI) || defined(STM32F1xx)
@@ -189,7 +189,7 @@ namespace ZenoPCB
         }
 #endif
 
-        // WiFi RSSI Pattern H gate as above.
+        // WiFi RSSI gate as above.
 #if defined(ESP32) || defined(ESP8266) || defined(ARDUINO_UNOR4_WIFI) || defined(STM32F1xx)
         if (WiFi.status() == WL_CONNECTED)
         {
@@ -220,7 +220,7 @@ namespace ZenoPCB
         }
 #endif
 
-        // Pattern H TU gate: WiFi.macAddress() zero-arg overload exists on
+        // TU gate: WiFi.macAddress zero-arg overload exists on
         // ESP32 / ESP8266 WiFi.h but not on UNO R4 (Renesas CWifi) or STM32
         // (WiFiEspAT) those expose only the buffer-out variant. Library
         // stays portable; the platform-specific MAC lookup is the HAL's job.

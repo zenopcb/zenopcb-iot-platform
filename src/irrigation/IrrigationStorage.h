@@ -20,15 +20,15 @@ namespace ZenoPCB
     /**
      * @brief Irrigation scenario + schedule persistence (via HAL).
      *
-     * Plan 04-03  all file I/O routes through `IZenoStorage` injected via
-     * `setHal(IZenoHal*)`. Plan 04-05 wires the canonical ESP32 HAL from
+     * all file I/O routes through `IZenoStorage` injected via
+     * `setHal(IZenoHal*)`. wires the canonical ESP32 HAL from
      * `Zeno::begin()`. Until then methods early-return when no HAL is set.
      */
     class IrrigationStorage
     {
     public:
         // ============================================
-        // HAL injection (Plan 04-03)
+        // HAL injection
         // ============================================
         static void setHal(IZenoHal *hal);
 

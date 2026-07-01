@@ -9,7 +9,7 @@ namespace ZenoPCB {
 
 bool Esp8266OTA::begin(size_t expectedSize, const char *expectedMd5) {
     if (!Update.begin(expectedSize)) return false;
-    // Pitfall 2 (RESEARCH "ESP32 API Wrapping Strategy") MD5 via begin().
+    // (RESEARCH "ESP32 API Wrapping Strategy") MD5 via begin.
     // The ESP8266 UpdaterClass exposes the same `setMD5(const char*)` overload.
     if (expectedMd5 && expectedMd5[0] != '\0') {
         Update.setMD5(expectedMd5);
@@ -27,7 +27,7 @@ size_t Esp8266OTA::write(const uint8_t *data, size_t len) {
 
 bool Esp8266OTA::end() {
     // true = set new partition as bootable. Caller is responsible for the
-    // reboot via IZenoSystem::restart() (interface contract from Plan 04-01).
+    // reboot via IZenoSystem::restart (interface contract from).
     return Update.end(true);
 }
 
@@ -43,7 +43,7 @@ const char *Esp8266OTA::errorString() {
     // Cache into a static char buffer so the IZenoOTA contract's
     // "pointer remains valid until the next OTA call" promise holds.
     //
-    // `char buf[64]` 512 B per-frame budget (D-08); function-local
+    // `char buf[64]` 512 B per-frame budget; function-local
     // static is initialised once and zero-filled at first call.
     static char buf[64];
     String s = Update.getErrorString();

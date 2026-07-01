@@ -7,11 +7,11 @@
  *        wraps the Arduino built-in `<EEPROM.h>` (Renesas FSP EEPROM
  *        emulation, ~8 KB on RA4M1).
  *
- * Mechanical Pattern A mirror of Esp8266NVS.{h,cpp} (Plan 06-01).
- * See .planning/phases/07-uno-r4-stm32-ports-capability-matrix/07-PATTERNS.md
+ * Mechanical mirror of Esp8266NVS.{h,cpp}.
+ * See.planning/phases/07-uno-r4-stm32-ports-capability-matrix/
  * "UnoR4NVS" (lines 351-415).
  *
- * D-10 + RESEARCH Architectural Responsibility Map line 110: UNO R4
+ * + RESEARCH Architectural Responsibility Map line 110: UNO R4
  * exposes the standard Arduino `<EEPROM.h>` API backed by RA4M1 silicon-
  * level wear-leveled flash emulation (~8 KB total). No vendored
  * Preferences backport is needed  we hand-roll a small length-prefixed
@@ -34,14 +34,14 @@
  * heap-allocated state. Stack arrays for KV record scan kept < 256 B per
  * CLAUDE.md memory rule.
  *
- * Deleted copy semantics per Pitfall 3 (single underlying EEPROM byte
+ * Deleted copy semantics per (single underlying EEPROM byte
  * array is process-global state; duplicating the wrapper would let two
  * `_open` namespaces race against each other on commit / clear).
  */
 
 #include "../IZenoNVS.h"
 
-// Pattern B/Pitfall 7 lifted to .h surface (Plan 06-2.5d carry-forward):
+// / lifted to.h surface (carry-forward)
 // `<EEPROM.h>` resolves to a different concrete class on AVR Arduino /
 // ESP32 / ESP8266 / Renesas RA4M1 cores. PIO's library scanner indexes
 // this header on every env. Guarding at the header surface keeps ESP32 /
@@ -64,7 +64,7 @@ public:
         _open = false;
     }
 
-    // Deleted copy semantics (Pitfall 3 EEPROM byte array is process-
+    // Deleted copy semantics (EEPROM byte array is process-
     // global state; duplicating the wrapper would let two `_open`
     // namespaces race on commit / clear).
     UnoR4NVS(const UnoR4NVS&) = delete;

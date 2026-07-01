@@ -3,7 +3,7 @@
 
 /**
  * @file arduino_compat.h
- * @brief Arduino-minimal abstraction layer for the STM32 HAL (D-25 NEW
+ * @brief Arduino-minimal abstraction layer for the STM32 HAL (NEW
  * user direction 2026-06-03 #3).
  *
  * Concentrates Arduino-specific calls (`millis()`, `Serial.print()`,
@@ -12,7 +12,7 @@
  * provide a single `arduino_compat.c` stub with three `extern "C"`
  * functions and rebuild - see PORTING_TO_CUBEIDE.md for the recipe.
  *
- * When compiled under STM32duino + PlatformIO (Phase 7 D-01 default),
+ * When compiled under STM32duino + PlatformIO (default)
  * `ARDUINO` is defined and the `compat::` wrappers resolve inline to the
  * standard Arduino API. When compiled under raw CubeIDE without
  * ArduinoCore, `ARDUINO` is undefined and the wrappers route through
@@ -20,17 +20,17 @@
  * `arduino_compat.c` using `HAL_GetTick()` / `printf()` / `HAL_Delay()`
  * (or whatever transport their project uses).
  *
- * Phase 7 D-01 invariant: the STM32duino + PlatformIO build is the
+ * invariant: the STM32duino + PlatformIO build is the
  * primary deliverable; the CubeIDE port is a DOWNSTREAM user recipe,
- * not a Phase 7 build target. The compat layer simply keeps that future
+ * not a build target. The compat layer simply keeps that future
  * port cost low (a single C stub file instead of a global find-and-
  * replace across `lib/ZenoPCB/src/hal/stm32/`).
  *
- * Design constraints (D-25):
+ * Design constraints
  * - No business logic in this header - only thin inline wrappers.
  * - All call sites in `lib/ZenoPCB/src/hal/stm32/*.cpp` MUST route
  * through `ZenoPCB::stm32::compat::` instead of bare Arduino API.
- * Enforced by the Plan 07-04 Task 3 verify gate:
+ * Enforced by the Task 3 verify gate
  * grep -cE "Serial\.|millis\(\)|delay\(" \
  * lib/ZenoPCB/src/hal/stm32/*.cpp returns 0
  * - The bare `<Arduino.h>` include is permitted in this header (and

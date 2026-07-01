@@ -4,41 +4,41 @@
 /**
  * @file UnoR4OTA.h
  * @brief Arduino UNO R4 WiFi (Renesas RA4M1) concrete impl of IZenoOTA 
- *        CUSTOM implementation authored from scratch per D-16 RESCOPED.
+ * CUSTOM implementation authored from scratch per RESCOPED.
  *
- * Pattern A mirror of Esp8266OTA.h (Plan 06-01) only at the IZenoOTA
+ * mirror of Esp8266OTA.h only at the IZenoOTA
  * contract shape (7 public methods); the bodies diverge entirely.
- * See .planning/phases/07-uno-r4-stm32-ports-capability-matrix/07-PATTERNS.md
+ * See.planning/phases/07-uno-r4-stm32-ports-capability-matrix/
  * "UnoR4OTA" (lines 485-579).
  *
- * **D-16 RESCOPED rationale (CONTEXT line 89):**
+ * ** RESCOPED rationale (CONTEXT line 89):**
  *   - `Arduino_ESP32_OTA`  REJECTED (GPL-3.0 license + esp32-only HAL
  *     surface; license-incompatible with the MIT OSS lib that consumes
  *     this HAL).
  *   - `jandrassy/ArduinoOTA`  REJECTED (LGPL  not vendored under
- *     D-15/16 LGPL isolation rule).
+ * /16 LGPL isolation rule).
  *   - **Decision:** author UnoR4OTA from scratch using `WiFiClient`
  *     (WiFiS3) for HTTP firmware download + Renesas RA4M1 FSP
  *     Flash API (`R_FLASH_LP_*` symbols exposed via ArduinoCore-renesas)
- *     for the partition write. Heavy lift ~3-5 days; Plan 07-02 delivers
+ * for the partition write. Heavy lift ~3-5 days; delivers
  *     compile-clean PLACEHOLDER bodies + clearly-marked TODO so opt-in
  *     users can complete the spike or wait for a follow-up plan.
  *
  * **Opt-in gate `-DZENOPCB_ENABLE_UNOR4_OTA`:** without this build flag
  * every method logs once on first call + returns failure. With the flag,
- * the bodies are PLACEHOLDER (per 07-PATTERNS.md lines 546-572) until
- * Plan 07-09 UAT hardware validation fills the live Renesas FSP Flash
- * API sequence. This mirrors the Phase 6 D-19 pattern where Esp8266OTA
+ * the bodies are PLACEHOLDER (per lines 546-572) until
+ * UAT hardware validation fills the live Renesas FSP Flash
+ * API sequence. This mirrors the pattern where Esp8266OTA
  * shipped with PENDING hardware soak.
  *
- * Deleted copy semantics per Pitfall 3  when the opt-in flag is on,
+ * Deleted copy semantics per when the opt-in flag is on
  * UnoR4OTA wraps shared Renesas FSP Flash open-handle state; cloning
  * the wrapper would let two writers race over the same flash region.
  */
 
 #include "../IZenoOTA.h"
 
-// Pattern B/Pitfall 7 lifted to .h surface (Plan 06-2.5d carry-forward):
+// / lifted to.h surface (carry-forward)
 // the opt-in branch includes RA4M1-only headers (`<WiFiS3.h>` for the
 // WiFi co-processor TCP client and the Renesas FSP Flash umbrella include
 // pulled through `<Arduino.h>`). PIO's library scanner indexes this header
@@ -60,7 +60,7 @@ public:
     UnoR4OTA() = default;
     ~UnoR4OTA() override = default;
 
-    // Deleted copy semantics (Pitfall 3 shared Renesas FSP Flash
+    // Deleted copy semantics (shared Renesas FSP Flash
     // open-handle state when -DZENOPCB_ENABLE_UNOR4_OTA is on).
     UnoR4OTA(const UnoR4OTA&) = delete;
     UnoR4OTA& operator=(const UnoR4OTA&) = delete;

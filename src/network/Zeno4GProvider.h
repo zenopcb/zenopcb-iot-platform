@@ -47,7 +47,8 @@ namespace ZenoPCB
      *
      * Usage:
      * @code
-     * Zeno4GProvider cellProvider(17, 16, 4);  // TX, RX, PWR
+     * Zeno4GProvider cellProvider(17, 16, 4);      // TX, RX, PWR (no reset line)
+     * Zeno4GProvider cellProvider(17, 16, 4, 5);   // TX, RX, PWR, RST
      * zeno.setNetworkProvider(&cellProvider).begin();
      * @endcode
      */
@@ -58,12 +59,12 @@ namespace ZenoPCB
          * @brief Constructor
          * @param txPin  ESP32 TX  Modem RX (default: GPIO 17)
          * @param rxPin  ESP32 RX  Modem TX (default: GPIO 16)
-         * @param pwrPin Modem power key pin (255 = not used)
-         * @param rstPin Modem reset pin (255 = not used)
+         * @param pwrPin Modem power key pin (-1 = not used)
+         * @param rstPin Modem reset pin (-1 = not used)
          * @param baudRate Serial baud rate (default: 115200)
          */
         Zeno4GProvider(uint8_t txPin = 17, uint8_t rxPin = 16,
-                       uint8_t pwrPin = 255, uint8_t rstPin = 255,
+                       int8_t pwrPin = -1, int8_t rstPin = -1,
                        uint32_t baudRate = 115200)
             : _txPin(txPin), _rxPin(rxPin), _pwrPin(pwrPin), _rstPin(rstPin),
 #if ZENOPCB_DEBUG_4G
@@ -98,10 +99,12 @@ namespace ZenoPCB
                 ZENO_LOG("4G", "No APN configured, using default: %s", _apn.c_str());
             }
 
-            // Hardware POWERKEY cycle (same as working reference project) 
+            _pulseResetPin();
+
+            // Hardware POWERKEY cycle (same as working reference project)
             // This is the ONLY reliable way to init A7680C / SIM7600-family modems.
             // DO NOT call modem.restart() / modem.init() before this sequence.
-            if (_pwrPin != 255)
+            if (_pwrPin >= 0)
             {
                 pinMode(_pwrPin, OUTPUT);
                 digitalWrite(_pwrPin, LOW); // Start LOW
@@ -124,7 +127,7 @@ namespace ZenoPCB
             Serial2.begin(_baudRate, SERIAL_8N1, _rxPin, _txPin);
             delay(1000);
 
-            if (_pwrPin != 255)
+            if (_pwrPin >= 0)
             {
                 // Step 4: Power ON (hold HIGH 700 ms)
                 ZENO_LOG("4G", "Powering ON modem...");
@@ -528,12 +531,28 @@ namespace ZenoPCB
             return true;
         }
 
+        static constexpr uint32_t RESET_PULSE_MS = 200;
+        static constexpr uint32_t POST_RESET_WAIT_MS = 5000;
+
+        void _pulseResetPin()
+        {
+            if (_rstPin < 0)
+                return;
+            pinMode(_rstPin, OUTPUT);
+            digitalWrite(_rstPin, LOW);
+            delay(RESET_PULSE_MS);
+            digitalWrite(_rstPin, HIGH);
+            pinMode(_rstPin, INPUT);
+        }
+
         void _restartModem()
         {
-            ZENO_LOG("4G", "Hardware-resetting modem (POWERKEY cycle)...");
+            ZENO_LOG("4G", "Hardware-resetting modem...");
             _connected = false;
 
-            if (_pwrPin != 255)
+            _pulseResetPin();
+
+            if (_pwrPin >= 0)
             {
                 // Power OFF
                 digitalWrite(_pwrPin, HIGH);
@@ -562,6 +581,14 @@ namespace ZenoPCB
                 while (Serial2.available())
                     Serial2.read();
             }
+            else if (_rstPin >= 0)
+            {
+                delay(POST_RESET_WAIT_MS);
+                Serial2.end();
+                delay(500);
+                Serial2.begin(_baudRate, SERIAL_8N1, _rxPin, _txPin);
+                delay(1000);
+            }
             else
             {
                 _modem.restart();
@@ -576,8 +603,8 @@ namespace ZenoPCB
 
         uint8_t _txPin;
         uint8_t _rxPin;
-        uint8_t _pwrPin;
-        uint8_t _rstPin;
+        int8_t _pwrPin;
+        int8_t _rstPin;
         uint32_t _baudRate;
 
 #if ZENOPCB_DEBUG_4G
@@ -597,7 +624,7 @@ namespace ZenoPCB
             ZENO_LOG("4G", "Shutting down modem hardware (cleanup after init failure)");
 
             // Power OFF modem if PWRKEY is available
-            if (_pwrPin != 255)
+            if (_pwrPin >= 0)
             {
                 digitalWrite(_pwrPin, HIGH);
                 delay(2500);

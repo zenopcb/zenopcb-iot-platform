@@ -6,7 +6,7 @@
 	This code is licensed under the BSD New License. See LICENSE.txt for more info.
 */
 
-// Plan 06-03 D-03 Modbus subsystem is ESP32-only.
+// Modbus subsystem is ESP32-only.
 #if defined(ESP32)
 
 #include "ModbusRTU.h"
@@ -381,4 +381,4 @@ bool ModbusRTUTemplate::cleanup()
 	return false;
 }
 
-#endif  // Plan 06-03 D-03 defined(ESP32)
+#endif  // defined(ESP32)

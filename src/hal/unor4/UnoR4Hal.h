@@ -5,21 +5,21 @@
  * @file UnoR4Hal.h
  * @brief Arduino UNO R4 WiFi (Renesas RA4M1) concrete facade implementing IZenoHal.
  *
- * Mechanical Pattern A mirror of Esp8266Hal.{h,cpp} from Phase 6 (Plan 06-01).
- * See .planning/phases/07-uno-r4-stm32-ports-capability-matrix/07-PATTERNS.md
+ * Mechanical mirror of Esp8266Hal.{h,cpp} from.
+ * See.planning/phases/07-uno-r4-stm32-ports-capability-matrix/
  * "UnoR4Hal" (lines 75-185).
  *
  * Composes the five UnoR4* sub-impls by value and exposes them via the
  * IZenoHal sub-getters. Capability bitmask returns `CAP_NVS | CAP_NTP |
- * CAP_WATCHDOG` (= 0x1C) baseline per CONTEXT D-10. Conditionally OR'd
- * with `CAP_OTA` when `-DZENOPCB_ENABLE_UNOR4_OTA` is defined (D-16
+ * CAP_WATCHDOG` (= 0x1C) baseline per CONTEXT. Conditionally OR'd
+ * with `CAP_OTA` when `-DZENOPCB_ENABLE_UNOR4_OTA` is defined (
  * RESCOPED  custom WiFiClient + RA4M1 Flash API impl; opt-in only).
  *
  * `CAP_FS_FILES` deliberately omitted: ArduinoCore-renesas ships no
  * LittleFS / SPIFFS for RA4M1 (RESEARCH Architectural Responsibility
  * Map line 109). UnoR4Storage methods all return failure stubs.
  *
- * Pitfall 3  deleted copy semantics. The contained UnoR4OTA would, when
+ * deleted copy semantics. The contained UnoR4OTA would, when
  * the opt-in flag is on, wrap shared Renesas FSP Flash open-handle state;
  * cloning UnoR4Hal could create a second wrapper that corrupts OTA
  * mid-stream. Deleting copy + assign makes that a compile error.
@@ -34,7 +34,7 @@
 
 #include "../IZenoHal.h"
 
-// Pattern B/Pitfall 7 lifted to .h surface (Plan 06-2.5d carry-forward): the
+// / lifted to.h surface (carry-forward): the
 // contained UnoR4*.h sub-impls include RA4M1-only headers (`<EEPROM.h>`
 // pulls Renesas FSP EEPROM emulation, `<WiFiS3.h>` is UNO R4 WiFi-only, the
 // Renesas FSP Flash API used by UnoR4OTA is not visible to other cores).
@@ -58,7 +58,7 @@ public:
     UnoR4Hal() = default;
     ~UnoR4Hal() override = default;
 
-    // Deleted copy semantics (Pitfall 3 contained UnoR4OTA wraps shared
+    // Deleted copy semantics (contained UnoR4OTA wraps shared
     // Renesas FSP Flash open-handle state when -DZENOPCB_ENABLE_UNOR4_OTA
     // is on; duplicating UnoR4Hal corrupts OTA state mid-stream).
     UnoR4Hal(const UnoR4Hal&) = delete;
@@ -71,8 +71,8 @@ public:
     IZenoSystem&  system()  override { return _system; }
 
     uint32_t capabilities() const override {
-        // D-10 baseline: CAP_FS_FILES omitted (no LittleFS on RA4M1).
-        // CAP_OTA opt-in via -DZENOPCB_ENABLE_UNOR4_OTA (D-16 RESCOPED).
+        // baseline: CAP_FS_FILES omitted (no LittleFS on RA4M1).
+        // CAP_OTA opt-in via -DZENOPCB_ENABLE_UNOR4_OTA (RESCOPED).
         uint32_t caps = CAP_NVS | CAP_NTP | CAP_WATCHDOG;
     #ifdef ZENOPCB_ENABLE_UNOR4_OTA
         caps |= CAP_OTA;
@@ -93,7 +93,7 @@ private:
  *
  * Implemented as a Meyers singleton in UnoR4Hal.cpp: lazy
  * function-local static, thread-safe in C++11+, no eager file-scope
- * global. Plan 07-06 wires this into the Zeno class default ctor via
+ * global. wires this into the Zeno class default ctor via
  * a platform-guarded ZENOPCB_DEFAULT_HAL() macro extension.
  */
 IZenoHal& getUnoR4Hal();

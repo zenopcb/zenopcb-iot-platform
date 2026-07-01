@@ -9,14 +9,14 @@
  *
  * `end()` only commits the new partition as bootable; the caller must
  * explicitly call `IZenoSystem.restart` afterwards. This split lets
- * Phase 7 STM32 ship without Update.h while keeping restart functional.
+ * STM32 ship without Update.h while keeping restart functional.
  *
  * On ESP32 the impl forwards to the global `Update` singleton (Update.h).
- * On Phase 6 ESP8266 it forwards to `Updater`. On Phase 7 STM32 it can
+ * On ESP8266 it forwards to `Updater`. On STM32 it can
  * forward to a custom bootloader / IAP flash writer.
  *
  * Optional MD5: pass via begin(); impl forwards to Update.setMD5 before
- * Update.begin (per RESEARCH Pitfall 2  Option b, single call).
+ * Update.begin (per RESEARCH Option b, single call).
  *
  * Rollback: canRollBack()/rollBack() let the device revert to the previous
  * bootable partition on ESP32 (Update.canRollBack / Update.rollBack).

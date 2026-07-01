@@ -1,9 +1,9 @@
-// Phase 7 Plan 07-06.6 TU guard for ZENOPCB_MICRO_BASIC profile.
+// TU guard for ZENOPCB_MICRO_BASIC profile.
 #if !defined(ZENOPCB_DISABLE_OTA)
 
 #include "ZenoPCBOTA.h"
 #include "../core/ZenoPCBDebug.h"
-// Plan 06-03 platform HAL bridge for static rollback helpers (Plan
+// platform HAL bridge for static rollback helpers (Plan
 // 04-05 removes once everything is instance-scoped).
 #if defined(ESP32)
   #include "../hal/esp32/Esp32Hal.h"
@@ -66,7 +66,7 @@ namespace ZenoPCB
     bool ZenoPCBOTA::startOTA(const char *url)
     {
         // Forward-compat capability gate (RESEARCH "Forward-Compat Considerations").
-        // ESP32 has CAP_OTA so this branch is never taken; Phase 6/7 ports without
+        // ESP32 has CAP_OTA so this branch is never taken; ports without
         // OTA partitions will return false here before any flash work.
         if (!(_hal.capabilities() & IZenoHal::CAP_OTA))
         {
@@ -146,7 +146,7 @@ namespace ZenoPCB
             }
         }
 
-        // T-4-OTA-SPLIT: end() commits the partition (true on success); on
+        // end() commits the partition (true on success); on
         // success we MUST call restart(). Pair kept textually adjacent.
         if (_hal.ota().end()) {
             _status = OTAStatus::COMPLETED;
@@ -298,7 +298,7 @@ namespace ZenoPCB
         return _progress;
 
     finalize:
-        // T-4-OTA-SPLIT: end()/restart() pair same shape as blocking path.
+        // end()/restart() pair same shape as blocking path.
         if (_hal.ota().end())
         {
             _status = OTAStatus::COMPLETED;
@@ -335,7 +335,7 @@ namespace ZenoPCB
     }
 
     // ============================================
-    // Rollback (static uses getXxxHal() bridge until Plan 04-05)
+    // Rollback (static uses getXxxHal bridge until)
     // ============================================
 
     bool ZenoPCBOTA::canRollBack()
@@ -356,7 +356,7 @@ namespace ZenoPCB
 #elif defined(ESP8266)
         IZenoHal &hal = getEsp8266Hal();
 #else
-        // Pattern H TU gate: UNO R4 / STM32 have no rollback infrastructure
+        // TU gate: UNO R4 / STM32 have no rollback infrastructure
         // (single-slot OTA on Renesas, no OTA on STM32 in this scope).
         // Earlier the body referenced 'hal' without a fallback declaration,
         // which slipped past ESP32 -fpermissive but trips strict toolchains.

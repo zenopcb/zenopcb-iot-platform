@@ -11,8 +11,8 @@
  * `isSynced()` to check sync status before relying on `now()`.
  *
  * On ESP32 the impl may delegate to existing TimeManager  leaving
- * TimeManager intact for Phase 4 per RESEARCH Pitfall 5 (avoid two
- * configTime callers fighting over global SNTP state). Phase 5/6 may
+ * TimeManager intact for per RESEARCH (avoid two
+ * configTime callers fighting over global SNTP state). may
  * migrate all TimeManager callers to IZenoTime.
  *
  * `time_t` is C standard <time.h>  POSIX seconds-since-epoch (UTC).

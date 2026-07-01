@@ -2,11 +2,11 @@
  * @file LittleFSManager.cpp
  * @brief Connection + data-monitor persistence routed through IZenoStorage.
  *
- * Plan 04-03. See ConnectionConfig.h / DataMonitorConfig.h for the path
+ * . See ConnectionConfig.h / DataMonitorConfig.h for the path
  * constants `CONNECTIONS_DIR`, `META_FILE`, `DATA_MONITORS_DIR`,
  * `DM_META_FILE`  path strings unchanged (EDGE-02 preserved).
  *
- * Plan 07-06.6  TU guard for ZENOPCB_MICRO_BASIC profile (F103 64KB budget):
+ * TU guard for ZENOPCB_MICRO_BASIC profile (F103 64KB budget)
  * when `-DZENOPCB_DISABLE_STORAGE` is set, the entire storage layer compiles
  * out (LittleFSManager + ConnectionConfig + DataMonitorConfig persistence).
  */
@@ -36,7 +36,7 @@ namespace ZenoPCB
 
     namespace
     {
-        // Bounded buffers for JSON staging. Sized per 04-03-AUDIT 3.3.
+        // Bounded buffers for JSON staging. Sized per 3.3.
         constexpr size_t CONFIG_FILE_BUF_SIZE = 2048;
         constexpr size_t CONFIG_META_BUF_SIZE = 4096;
         constexpr size_t DM_FILE_BUF_SIZE = 1024;
@@ -152,7 +152,7 @@ namespace ZenoPCB
         String jsonStr;
         serializeJson(doc, jsonStr);
 
-        // Write via HAL (Plan 04-03 see 04-03-AUDIT.md 5 Deviation A:
+        // Write via HAL (see 5 Deviation A
         // the prior temp+rename atomic semantic is replaced with a direct
         // writeFile() because IZenoStorage exposes no rename(). Short-write
         // detection retained via return-value compare.)
@@ -433,14 +433,14 @@ namespace ZenoPCB
 
     size_t LittleFSManager::getStorageUsed()
     {
-        // Deviation B per 04-03-AUDIT.md 5 IZenoStorage does not expose
+        // Deviation B per 5 IZenoStorage does not expose
         // usedBytes(); return 0 until a future plan extends the HAL surface.
         return 0;
     }
 
     size_t LittleFSManager::getStorageAvailable()
     {
-        // Deviation B per 04-03-AUDIT.md 5 IZenoStorage does not expose
+        // Deviation B per 5 IZenoStorage does not expose
         // totalBytes(); return 0 until a future plan extends the HAL surface.
         return 0;
     }
@@ -935,7 +935,7 @@ namespace ZenoPCB
 
     bool LittleFSManager::_atomicWrite(const String &path, const String &content)
     {
-        // 04-03-AUDIT.md 5 Deviation A: IZenoStorage does not expose rename(),
+        // 5 Deviation A: IZenoStorage does not expose rename
         // so the pre-refactor temp+rename atomic-write sequence is replaced
         // with a direct writeFile() and short-write detection. Power-loss
         // crash-resilience is reduced; functional callers already check the

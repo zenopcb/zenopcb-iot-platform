@@ -1,6 +1,6 @@
 #include "Esp32NVS.h"
 
-// Plan 06-03 Pattern B (symmetric to Plan 06-2.5d Esp8266 mirror) 
+// (symmetric to Esp8266 mirror)
 // TU guard so PIO's library scanner compiles to an empty translation
 // unit on non-ESP32 envs even when build_src_filter does not exclude
 // the file.
@@ -34,7 +34,7 @@ size_t writeDefault(char *out, size_t maxLen, const char *defaultValue) {
 bool Esp32NVS::begin(const char *namespaceName, bool readOnly) {
     if (!namespaceName) return false;
     if (_open) {
-        // Pitfall 1 pair every open with a close. If a caller forgot to
+        // pair every open with a close. If a caller forgot to
         // close the previous namespace, surface it and recover.
         ZENO_LOG_CORE("Esp32NVS::begin: handle already open, closing previous");
         _prefs.end();
@@ -67,7 +67,7 @@ size_t Esp32NVS::getString(const char *key, char *out, size_t maxLen,
         return writeDefault(out, maxLen, defaultValue);
     }
 
-    // Pitfall 9 explicitly call the char-buffer overload (not the
+    // explicitly call the char-buffer overload (not the
     // String-returning one) to avoid heap allocation. Returns bytes written
     // including the NUL on success per arduino-esp32 docs; we re-derive the
     // length via strnlen for safety.

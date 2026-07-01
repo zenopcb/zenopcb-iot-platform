@@ -9,14 +9,14 @@
  * Consumers receive an `IZenoHal&` and call sub-getters: e.g.
  *   hal.nvs().begin("zeno_creds"); hal.nvs().getString(...);
  *
- * Concrete impl on ESP32 = `Esp32Hal` (Plan 04-02). Phase 6 will add
- * `Esp8266Hal`; Phase 7 will add `UnoR4Hal` and `Stm32Hal`.
+ * Concrete impl on ESP32 = `Esp32Hal`. will add
+ * `Esp8266Hal`; will add `UnoR4Hal` and `Stm32Hal`.
  *
  * `capabilities()` returns a bitmask of `Capability` values. ESP32
- * returns all 5; Phase 6/7 ports return fewer. Consumers should gate
+ * returns all 5; ports return fewer. Consumers should gate
  * optional features with `if (hal.capabilities() & CAP_X) { ... }`
  * even on ESP32 where the branch is always taken  forward-compat for
- * Phase 6/7 ports without a second refactor pass.
+ * ports without a second refactor pass.
  *
  * Sub-getters return non-const references because consumers mutate
  * underlying state (e.g. nvs().putString writes NVS). `capabilities()`
@@ -34,7 +34,7 @@
 namespace ZenoPCB {
 
 /**
- * @brief Return type for fallible Zeno facade methods (Pattern G, Phase 7 D-06).
+ * @brief Return type for fallible Zeno facade methods.
  *
  * Declared at namespace scope (alongside `IZenoHal::Capability` bitmask) so
  * callers can write `if (zeno.ota(url) != ZenoCapability::OK) { ... }` without
@@ -51,8 +51,8 @@ namespace ZenoPCB {
  *   - `Pending`       operation in progress (e.g., OTA download streaming;
  *                     a second call while the first is still active).
  *
- * Pattern G differs from Phase 6 Pattern F (silent no-op + `return *this` on
- * `enableXxx()` builders, preserved per D-07): builders must keep `Zeno&` for
+ * differs from (silent no-op + `return *this` on
+ * `enableXxx` builders, preserved per): builders must keep `Zeno&` for
  * the fluent chain, whereas fallible runtime methods can change return type.
  */
 enum class ZenoCapability : uint8_t {
@@ -76,9 +76,9 @@ public:
         CAP_NVS             = 1u << 2,  ///< Has persistent namespaced KV store.
         CAP_NTP             = 1u << 3,  ///< Can sync wall-clock via NTP.
         CAP_WATCHDOG        = 1u << 4,  ///< Has task / hardware watchdog.
-        CAP_CAPTIVE_PORTAL  = 1u << 5,  ///< NEW Phase 7 AP-mode WiFi captive-portal supported (UNO R4/STM32 opt-out per D-09/D-10).
-        CAP_TLS             = 1u << 6,  ///< NEW Phase 7 runtime introspection of -DZENOPCB_ENABLE_TLS opt-in (D-13/D-27).
-        CAP_DIAGNOSTICS     = 1u << 7,  ///< NEW Phase 7 F1 MICRO profile drops Diagnostics per D-12.
+        CAP_CAPTIVE_PORTAL  = 1u << 5,  /// < NEW AP-mode WiFi captive-portal supported (UNO R4/STM32 opt-out per /).
+        CAP_TLS             = 1u << 6,  /// < NEW runtime introspection of -DZENOPCB_ENABLE_TLS opt-in (/).
+        CAP_DIAGNOSTICS     = 1u << 7,  /// < NEW F1 MICRO profile drops Diagnostics per.
     };
 
     // ---- Sub-interface accessors --------------------------------------
@@ -92,10 +92,10 @@ public:
     // ---- Capabilities --------------------------------------------------
 
     /**
-     * Bitmask of `Capability` values. ESP32 returns all 5; Phase 6/7
+     * Bitmask of `Capability` values. ESP32 returns all 5;
      * ports return fewer. Consumers should gate optional features with
      * `if (hal.capabilities() & CAP_X) { ... }` even on ESP32 where the
-     * branch is always taken  forward-compat for Phase 6/7.
+     * branch is always taken forward-compat for.
      */
     virtual uint32_t capabilities() const = 0;
 };

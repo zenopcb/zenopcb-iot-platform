@@ -12,7 +12,7 @@
 
 #include <Arduino.h>
 #include <Client.h>
-#include "PubSubClient.h"  // vendored knolleary/PubSubClient declares class ZenoPubSubClient (post Plan 06-2.5c rename)
+#include "PubSubClient.h"  // vendored knolleary/PubSubClient declares class ZenoPubSubClient (post rename)
 #include "MQTTTypes.h"
 #include "../core/ZenoPCBDebug.h"
 

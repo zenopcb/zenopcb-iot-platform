@@ -8,7 +8,7 @@ namespace ZenoPCB {
 
 namespace {
 
-// Pitfall 1 ESP8266 LittleFS requires every parent directory to
+// ESP8266 LittleFS requires every parent directory to
 // exist before opening a file in write mode under a sub-directory.
 // (ESP32 LittleFS auto-creates parents; ESP8266 silently returns an
 // invalid File handle if a parent is missing.) Split `path` on '/'
@@ -16,7 +16,7 @@ namespace {
 // sub-directories (root-relative files like "/foo.json").
 //
 // `char buf[128]` stays well under the 512 B per-frame stack budget
-// (06-CONTEXT D-08) and matches the upper-bound used by `listFiles`
+// and matches the upper-bound used by `listFiles`
 // in the ESP32 analog.
 void ensureParentDirs(const char *path) {
     if (!path || path[0] != '/') return;
@@ -132,7 +132,7 @@ void Esp8266Storage::listFiles(const char *prefix,
     // Iterate every direct child entry. Each `entry` is closed automatically
     // when it goes out of scope at the bottom of each loop iteration
     // (Arduino-ESP8266 File RAII), but we also close explicitly for clarity
-    // (Pitfall 2 leaked LittleFS handles exhaust the handle table).
+    // (leaked LittleFS handles exhaust the handle table).
     //
     // NOTE: ESP8266 LittleFS exposes a different directory iteration API
     // than ESP32 (Dir/openNextFile vs File/openNextFile). The analog
@@ -141,14 +141,14 @@ void Esp8266Storage::listFiles(const char *prefix,
     // `dir.next()`). This .cpp keeps the ESP32 call site verbatim; the
     // backport divergence is resolved at compile time inside the
     // `<LittleFS.h>` headers on ESP8266 if the API names match
-    // sufficiently. If they diverge at compile-time in Plan 06-02, the
+    // sufficiently. If they diverge at compile-time in, the
     // executor of 06-02 will narrow this one body to use `Dir` /
     // `dir.next()` / `dir.fileName()` per ESP8266 LittleFS API.
     while (true) {
         File entry = dir.openNextFile();
         if (!entry) break;
 
-        // Plan 06-03 Rule 3 ESP8266 fs::File lacks path(); use
+        // ESP8266 fs::File lacks path; use
         // fullName() which returns the absolute path within LittleFS
         // root. ESP32 Storage uses entry.path(); both produce the
         // same "/dir/file.ext" shape so the strncmp() comparison

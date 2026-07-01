@@ -7,8 +7,8 @@
  *
  * Part of the ZenoPCB Hardware Abstraction Layer (HAL). Concrete impls
  * live under hal/<platform>/ (e.g. hal/esp32/Esp32Storage.{h,cpp}). On
- * ESP32 the impl wraps LittleFS; on Phase 6 ESP8266 it wraps LittleFS
- * as well; on Phase 7 STM32 it can wrap InternalStorage or SPI flash.
+ * ESP32 the impl wraps LittleFS; on ESP8266 it wraps LittleFS
+ * as well; on STM32 it can wrap InternalStorage or SPI flash.
  *
  * Design notes:
  *  - All path / data parameters are `const char*` and bounded buffers

@@ -8,14 +8,14 @@
  *
  * Wraps `ESP.restart()`, `ESP.getFreeHeap()`, `ESP.getHeapSize()`,
  * `ESP.getMaxAllocHeap()`, `ESP.getEfuseMac()`, `millis()` and
- * `esp_task_wdt_reset()` on ESP32. Phase 6/7 ports forward to their
+ * `esp_task_wdt_reset` on ESP32. ports forward to their
  * platform equivalents.
  *
  * `restart()` is `[[noreturn]]`  execution does not return; the chip
  * resets within ~1 ms. Callers should not write code after the call
- * (per Pitfall 4). If the toolchain rejects `[[noreturn]]` on a pure
+ * (per). If the toolchain rejects `[[noreturn]]` on a pure
  * virtual, the attribute will be dropped and behaviour remains the
- * same  see action note in 04-01-PLAN Task 2 (A8 MEDIUM risk).
+ * same see action note in Task 2 (A8 MEDIUM risk).
  *
  * `getTotalHeap()` is required by DiagnosticsCollector which computes
  * used memory as `getTotalHeap() - getFreeHeap()`. Matches existing
@@ -57,8 +57,8 @@ struct IZenoSystem {
     /**
      * Total heap capacity in bytes (ESP32 = ESP.getHeapSize()).
      * Required by DiagnosticsCollector which computes used heap as
-     * getTotalHeap() - getFreeHeap(). Phase 6 ESP8266 may return a
-     * static MMU-defined total; Phase 7 STM32 returns the linker
+     * getTotalHeap - getFreeHeap. ESP8266 may return a
+     * static MMU-defined total; STM32 returns the linker
      * `_end` to `_estack` window.
      */
     virtual uint32_t getTotalHeap() = 0;

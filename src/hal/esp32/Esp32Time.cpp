@@ -1,6 +1,6 @@
 #include "Esp32Time.h"
 
-// Plan 06-03 Pattern B (symmetric to Plan 06-2.5d Esp8266 mirror).
+// (symmetric to Esp8266 mirror).
 #if defined(ESP32)
 
 #include "../../core/TimeManager.h"
@@ -10,7 +10,7 @@ namespace ZenoPCB {
 void Esp32Time::syncNTP(const char *server,
                         long gmtOffsetSec,
                         int daylightOffsetSec) {
-    // Pitfall 5 delegate to TimeManager so a single owner controls the
+    // delegate to TimeManager so a single owner controls the
     // global lwIP SNTP state. TimeManager::syncNTP has additional
     // secondary/tertiary server defaults; pass through the primary and
     // let the defaults supply fallbacks.

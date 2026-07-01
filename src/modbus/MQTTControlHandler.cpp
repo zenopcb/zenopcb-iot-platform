@@ -9,7 +9,7 @@
  * @version 1.1.0
  */
 
-// Plan 06-03 D-03 - Modbus subsystem is ESP32-only; TU guard so PIO
+// Modbus subsystem is ESP32-only; TU guard so PIO
 // library scanner reduces this file to empty TU on ESP8266.
 #if defined(ESP32)
 
@@ -310,4 +310,4 @@ namespace ZenoPCB
 
 } // namespace ZenoPCB
 
-#endif // Plan 06-03 D-03 - defined(ESP32)
+#endif // defined(ESP32)

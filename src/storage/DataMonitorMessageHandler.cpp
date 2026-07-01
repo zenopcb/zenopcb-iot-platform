@@ -5,14 +5,14 @@
  * @author ZenoPCB Development Team
  * @version 1.0.0
  */
-// Phase 7 Plan 07-06.6 TU guard for ZENOPCB_MICRO_BASIC profile.
+// TU guard for ZENOPCB_MICRO_BASIC profile.
 #if !defined(ZENOPCB_DISABLE_STORAGE)
 
 #include "DataMonitorMessageHandler.h"
 
 #include "../core/ZenoPCBDebug.h"
 
-// Plan 06-3.5: Modbus IO is ESP32-only. Headers are conditionally included so the
+// : Modbus IO is ESP32-only. Headers are conditionally included so the
 // management-layer methods of DataMonitorMessageHandler still link on ESP8266 while
 // the Modbus polling/buffer call sites are guarded out.
 #if defined(ESP32)
@@ -25,7 +25,7 @@
 #define ZENOPCB_DEBUG_STORAGE 1 // SET TO 1 FOR DEBUG
 #endif
 
-// Phase 7 Plan 07-06.5 route through ZENOPCB_PRINTF for portability.
+// route through ZENOPCB_PRINTF for portability.
 #if ZENOPCB_DEBUG_STORAGE
 #define STORAGE_LOG(fmt, ...) ZENOPCB_PRINTF("[DataMonitor]" fmt "\n", ##__VA_ARGS__)
 #else
