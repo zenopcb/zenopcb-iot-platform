@@ -35,8 +35,10 @@
  *     Use sensors.getAddress(...) + getTempC(...) to address others.
  *
  * @lib_deps
- *   - paulstoffregen/OneWire           (>= 2.3.8)
- *   - milesburton/DallasTemperature    (>= 3.11.0)
+ *   - OneWire (Paul Stoffregen), >= 2.3.8
+ *     https://github.com/PaulStoffregen/OneWire
+ *   - DallasTemperature (Miles Burton), >= 3.11.0
+ *     https://github.com/milesburton/Arduino-Temperature-Control-Library
  */
 
 #include <ZenoPCBMain.h>

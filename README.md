@@ -342,6 +342,10 @@ zenopcb-iot-platform/
 - **Thêm nền tảng** — hiện thực `IZenoHal` (kèm `IZenoNVS`, `IZenoStorage`, `IZenoOTA`, `IZenoSystem`, `IZenoTime`) trong `src/hal/<platform>/`, rồi thêm nhánh `#elif defined(<MACRO>)` tại [src/ZenoPCB.h:48-63](src/ZenoPCB.h#L48-L63).
 - **Vendor** — lib bên thứ ba ở `src/vendor/` để tránh xung đột với Library Manager. ArduinoJson đã rename namespace thành `ZenoJson`.
 
+## Đóng góp
+
+Cảm ơn cộng đồng đã báo lỗi và đề xuất cải tiến — xem [CONTRIBUTORS.md](CONTRIBUTORS.md). Quy trình đóng góp ở [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Giấy phép
 
 Xem [LICENSE](LICENSE). Mỗi vendor lib trong `src/vendor/` giữ giấy phép gốc của tác giả.

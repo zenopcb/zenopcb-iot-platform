@@ -32,8 +32,8 @@
  *   See "Wiring" section above.
  *
  * @lib_deps
- *   - `adafruit/Adafruit GFX Library`
- *   - `adafruit/Adafruit SSD1306`
+ *   - Adafruit GFX Library — https://github.com/adafruit/Adafruit-GFX-Library
+ *   - Adafruit SSD1306 — https://github.com/adafruit/Adafruit_SSD1306
  *
  * @usage
  *   1. Install the two Adafruit libraries.

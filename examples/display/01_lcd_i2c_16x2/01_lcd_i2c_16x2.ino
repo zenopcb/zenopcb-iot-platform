@@ -33,7 +33,9 @@
  *   See "Wiring" section above.
  *
  * @lib_deps
- *   Arduino IDE / platformio.ini: `marcoschwartz/LiquidCrystal_I2C @ ^1.1.4`.
+ *   - LiquidCrystal_I2C (markub3327), >= 2.0.0
+ *     https://github.com/markub3327/LiquidCrystal_I2C
+ *     (Arduino IDE: Library Manager > search "LiquidCrystal_I2C")
  *
  * @usage
  *   1. Install the LiquidCrystal_I2C library.

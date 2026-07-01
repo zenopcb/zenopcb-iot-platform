@@ -36,9 +36,10 @@
  * - Servo YELLOW/WHITE -> SERVO_PIN.
  *
  * @lib_deps
- * Arduino IDE: bundled `Servo` library covers ESP8266 / STM32 / AVR.
- * ESP32: install `ESP32Servo` from Library Manager (the stock Servo lib
- * does not exist on ESP32 because the ESP32 uses LEDC PWM instead of timers).
+ * Arduino IDE: bundled `Servo` library covers ESP8266 / STM32 / AVR (no install).
+ * ESP32: install `ESP32Servo` (the stock Servo lib does not exist on ESP32
+ * because the ESP32 uses LEDC PWM instead of timers).
+ *   - ESP32Servo (madhephaestus) — https://github.com/madhephaestus/ESP32Servo
  *
  * @usage
  * 1. Replace WIFI_SSID / WIFI_PASS / DEVICE_ID / DEVICE_TOKEN below.

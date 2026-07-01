@@ -35,7 +35,9 @@
  *   - If readings show as NaN, double-check VCC, GND, and the pull-up resistor.
  *
  * @lib_deps
- *   - Adafruit/DHT sensor library  (>= 1.4.6)
+ *   - DHT sensor library (Adafruit), >= 1.4.6
+ *     https://github.com/adafruit/DHT-sensor-library
+ *     (Library Manager also pulls in "Adafruit Unified Sensor")
  */
 
 #include <ZenoPCBMain.h>
