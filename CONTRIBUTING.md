@@ -95,9 +95,9 @@ Mặc định không viết comment. Chỉ viết khi:
     */
    ```
 
-4. Cross-platform: dùng `#if defined(...) ... #elif ... #endif` cho pin mapping và ADC bit-depth (xem [`examples/io/05_analog_read/`](examples/io/05_analog_read/) làm template).
+4. Cross-platform: dùng `#if defined(...) ... #elif ... #endif` cho pin mapping và ADC bit-depth (xem [`examples/io/02_analog_read/`](examples/io/02_analog_read/) làm template).
 5. Nếu sketch yêu cầu lib bên ngoài: thêm comment `@lib_deps` với cú pháp PlatformIO và hướng dẫn Arduino IDE Library Manager.
-6. Cập nhật bảng examples trong [`README.md`](README.md) (section "Bộ 44 examples").
+6. Cập nhật bảng examples trong [`README.md`](README.md) (section "Bộ 31 examples").
 7. Compile thử trên các nền tảng sketch hỗ trợ trước khi mở PR.
 
 ## Báo lỗi (Bug report)

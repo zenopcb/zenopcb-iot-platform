@@ -1,5 +1,5 @@
 /**
- * @file 04_digital_input_output.ino
+ * @file 01_digital_input_output.ino
  * @brief Button + LED on the same board, with the LED also controllable from the cloud.
  *
  * What you'll learn:

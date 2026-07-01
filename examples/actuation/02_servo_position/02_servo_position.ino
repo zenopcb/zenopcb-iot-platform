@@ -1,5 +1,5 @@
 /**
- * @file 03_servo_position.ino
+ * @file 02_servo_position.ino
  * @brief Drive a hobby servo to an angle (0..180 deg) set from the cloud.
  *
  * What you'll learn:

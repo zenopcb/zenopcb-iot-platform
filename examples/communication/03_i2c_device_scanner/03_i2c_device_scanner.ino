@@ -60,6 +60,16 @@ using namespace ZenoPCB;
 #define DEVICE_ID "REPLACE_ME"
 #define DEVICE_TOKEN "REPLACE_AT_PROVISIONING"
 
+// I2C bus pins. ESP32 / ESP8266 can remap SDA/SCL, so set them explicitly.
+// Other boards use their fixed hardware I2C pins.
+#if defined(ESP32)
+  #define I2C_SDA 21
+  #define I2C_SCL 22
+#elif defined(ESP8266)
+  #define I2C_SDA 4    // D2 on NodeMCU/Wemos
+  #define I2C_SCL 5    // D1 on NodeMCU/Wemos
+#endif
+
 Zeno zeno;
 
 // Walk every valid I2C address. A device that ACKs the probe is "present".
@@ -102,7 +112,11 @@ CLOUD_TO_DEVICE(Z1)
 void setup()
 {
     Serial.begin(115200);
-    Wire.begin();                          // default SDA/SCL: GPIO 21/22 on ESP32
+#if defined(ESP32) || defined(ESP8266)
+    Wire.begin(I2C_SDA, I2C_SCL);
+#else
+    Wire.begin();
+#endif
 
     zeno.wifi(WIFI_SSID, WIFI_PASS)
         .device(DEVICE_ID, DEVICE_TOKEN)

@@ -1,5 +1,5 @@
 /**
- * @file 05_analog_read.ino
+ * @file 02_analog_read.ino
  * @brief Read an analog input (pot or LDR) and publish a normalised 0..100 % to Z2.
  *
  * What you'll learn:

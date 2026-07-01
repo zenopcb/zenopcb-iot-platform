@@ -1,5 +1,5 @@
 /**
- * @file 06_soil_moisture.ino
+ * @file 05_soil_moisture.ino
  * @brief Read a capacitive soil moisture sensor and publish 0..100 % to Z0 every 30 seconds.
  *
  * What you'll learn:

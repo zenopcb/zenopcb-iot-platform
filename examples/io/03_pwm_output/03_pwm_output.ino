@@ -1,5 +1,5 @@
 /**
- * @file 06_pwm_output.ino
+ * @file 03_pwm_output.ino
  * @brief Cloud-controlled LED brightness over PWM — write Z3 (0..255) from the dashboard.
  *
  * What you'll learn:

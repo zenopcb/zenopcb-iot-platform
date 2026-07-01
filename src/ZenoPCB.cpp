@@ -2846,32 +2846,10 @@ namespace ZenoPCB
             return;
         }
 
-        // hot-path refactor: build the Z-Key payload + topic
-        // into stack buffers instead of three heap-allocated Strings per publish.
-        // Pattern from.planning/phases/03-internal-tech-debt-cleanup/
-        // Code Example 2; depends on the const char* publish overloads added in 03-01.
-
-        // 1. Build JSON into a stack buffer via ArduinoJson serializeJson(doc, char*, size).
-        // THREAD-NOTE: ZKeyBuffer instance + JsonDocument are stack-scoped here;
-        // no cross-task aliasing.
-        JsonDocument doc;
-        buffer.mergeIntoJson(doc);
-        char zJsonBuf[512]; // RESEARCH.md A1: typical < 256 B; 512 = 2x headroom; well under CLAUDE.md 1 KB stack limit
-        size_t n = serializeJson(doc, zJsonBuf, sizeof(zJsonBuf));
-        if (n == 0 || n >= sizeof(zJsonBuf))
-        {
-            ZENO_LOG_CORE("ZKey JSON truncated/empty (n=%u, cap=%u)",
-                          (unsigned)n, (unsigned)sizeof(zJsonBuf));
-            return;
-        }
-        if (n <= 2) // "{}" nothing dirty after merge; preserve existing length > 2 guard
-            return;
-
-        // 2. Build topic into stack buffer.
-        // THREAD-NOTE: _deviceToken is set once at provisioning (Zeno::setDeviceCredentials
-        // / NVS first-boot) and never mutated post-begin(). .c_str() is stable for the
-        // lifetime of this call. (RESEARCH.md)
-        char topicBuf[128]; // longest topic ~53 B; 128 matches MQTTClient::_brokerStable convention
+        // Build the telemetry topic once into a stack buffer. _deviceToken is
+        // set at provisioning and never mutated post-begin(), so .c_str() is
+        // stable for this call.
+        char topicBuf[128];
         int tn = snprintf(topicBuf, sizeof(topicBuf), "v1/devices/%s/telemetry",
                           _deviceToken.c_str());
         if (tn < 0 || (size_t)tn >= sizeof(topicBuf))
@@ -2880,33 +2858,112 @@ namespace ZenoPCB
             return;
         }
 
-        // 4G OTA: queue instead of direct publish.
-        // Cold path (OTA active). One-time String alloc at the queue boundary is
-        // acceptable per RESEARCH.md Risk R2 the QueuedMQTTMessage struct still
-        // takes const String& and is explicitly out of scope for.
+        // Size-bounded chunking: walk the dirty set into stack-sized JSON
+        // messages instead of one document. 460 B keeps each chunk inside
+        // zJsonBuf[512] with headroom, so publishing the full 255-key range
+        // never materialises the whole document nor overflows a publish.
+        const size_t ZKEY_CHUNK_MAX_BYTES = 460;
+
+        // 4G OTA queue mode: flushing many chunks back-to-back at an OTA yield
+        // risks modem TCP overflow, so defer multi-chunk telemetry until OTA
+        // completes (dirty flags kept for retry) rather than send a partial.
         if (_mqttQueueEnabled)
         {
+            uint16_t totalDirty = buffer.getDirtyCount();
+            uint16_t cursor = 0;
+            JsonDocument doc;
+            uint16_t added = buffer.mergeDirtyChunk(doc, cursor, ZKEY_CHUNK_MAX_BYTES);
+            if (added < totalDirty)
+            {
+                ZENO_LOG_CORE("ZKey telemetry deferred (%u keys) too large for 4G OTA queue",
+                              (unsigned)totalDirty);
+                return; // keep dirty flags; retry after OTA
+            }
+            if (doc.overflowed())
+            {
+                ZENO_LOG_CORE("ZKey doc overflow (low heap) skip publish");
+                return;
+            }
+            char zJsonBuf[512];
+            size_t n = serializeJson(doc, zJsonBuf, sizeof(zJsonBuf));
+            if (n <= 2 || n >= sizeof(zJsonBuf))
+            {
+                ZENO_LOG_CORE("ZKey JSON truncated/empty (n=%u)", (unsigned)n);
+                return;
+            }
             _enqueueMQTT(String(topicBuf), String(zJsonBuf), MQTTQoS::QOS_1, false);
             ZENO_LOG_CORE("ZKey queued: %s will flush at OTA yield", zJsonBuf);
-            buffer.clearDirtyFlags();
             buffer.markPublished();
             return;
         }
 
-        // Hot path direct publish via new char* overload from plan 03-01
-        // (: must NOT use.c_str round-trip into the String overload).
-        bool published = _mqtt->publish(topicBuf, zJsonBuf, MQTTQoS::QOS_1, false);
+        // Direct publish: one MQTT message per bounded chunk. Dirty flags clear
+        // only after every chunk succeeds, so a mid-stream failure retries the
+        // whole set on the next cycle (duplicate telemetry is idempotent).
+        // On cellular each publish is an AT+CIPSEND; firing several back-to-back
+        // in one tick overflows the modem TCP buffer. Space multi-chunk sends on
+        // 4G only (WiFi/Ethernet keep their zero-latency single-tick path).
+        const bool is4G = _networkProvider &&
+                          strcmp(_networkProvider->getName(), "4G") == 0;
 
-        if (published)
+        uint16_t cursor = 0;
+        int chunkCount = 0;
+        int okChunks = 0;
+        bool failed = false;
+
+        while (cursor < Z_KEY_COUNT)
         {
-            ZENO_LOG_CORE("ZKey: %s", zJsonBuf);
-            buffer.clearDirtyFlags();
-            buffer.markPublished();
+            JsonDocument doc;
+            uint16_t added = buffer.mergeDirtyChunk(doc, cursor, ZKEY_CHUNK_MAX_BYTES);
+            if (added == 0)
+                break; // no dirty keys remaining
+
+            if (doc.overflowed())
+            {
+                ZENO_LOG_CORE("ZKey chunk overflow (low heap) skip publish");
+                failed = true;
+                break;
+            }
+
+            chunkCount++;
+
+            char zJsonBuf[512];
+            size_t n = serializeJson(doc, zJsonBuf, sizeof(zJsonBuf));
+            if (n <= 2 || n >= sizeof(zJsonBuf))
+            {
+                ZENO_LOG_CORE("ZKey chunk truncated/empty (n=%u, cap=%u)",
+                              (unsigned)n, (unsigned)sizeof(zJsonBuf));
+                failed = true;
+                break;
+            }
+
+            // Let the modem drain the previous CIPSEND before the next chunk.
+            if (is4G && okChunks > 0)
+            {
+                _mqtt->loop();
+                delay(10);
+            }
+
+            if (_mqtt->publish(topicBuf, zJsonBuf, MQTTQoS::QOS_1, false))
+            {
+                okChunks++;
+                ZENO_LOG_CORE("ZKey: %s", zJsonBuf);
+            }
+            else
+            {
+                ZENO_LOG_CORE("ZKey publish FAILED (chunk %d)", chunkCount);
+                failed = true;
+                break;
+            }
         }
-        else
+
+        if (!failed && chunkCount > 0 && okChunks == chunkCount)
         {
-            ZENO_LOG_CORE("ZKey publish FAILED");
+            if (chunkCount > 1)
+                ZENO_LOG_CORE("ZKey telemetry: %d chunks published", chunkCount);
+            buffer.markPublished(); // clears dirty flags
         }
+        // else: leave dirty flags set; retry on the next publish cycle.
     }
 
     void Zeno::_initDiagnostics()

@@ -1,5 +1,5 @@
 /**
- * @file 05_dallas_ds18b20.ino
+ * @file 04_dallas_ds18b20.ino
  * @brief Read a Dallas DS18B20 1-Wire temperature sensor and publish degC to Z0 every 5 seconds.
  *
  * What you'll learn:

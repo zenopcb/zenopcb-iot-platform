@@ -1,5 +1,5 @@
 /**
- * @file 04_dc_motor.ino
+ * @file 03_dc_motor.ino
  * @brief Spin a DC motor forward/reverse with PWM speed from the cloud.
  *
  * What you'll learn:

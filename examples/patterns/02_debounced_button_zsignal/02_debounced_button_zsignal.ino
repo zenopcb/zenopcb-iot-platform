@@ -1,5 +1,5 @@
 /**
- * @file 03_debounced_button_zsignal.ino
+ * @file 02_debounced_button_zsignal.ino
  * @brief Debounced button — publish click counter to Z0 and long-press events to Z1.
  *
  * What you'll learn:

@@ -288,6 +288,72 @@ namespace ZenoPCB
         return count;
     }
 
+    uint16_t ZKeyBuffer::mergeDirtyChunk(JsonDocument &doc, uint16_t &cursor, size_t maxBytes) const
+    {
+        size_t est = 2; // outer "{}"
+        uint16_t added = 0;
+
+        while (cursor < Z_KEY_COUNT)
+        {
+            uint16_t i = cursor;
+
+            if (!_values[i].dirty || _values[i].type == ZValueType::NONE)
+            {
+                cursor++;
+                continue;
+            }
+
+            // Upper-bound size of this entry: "Z<n>":<value>,
+            //   key: 'Z' + up to 3 digits + 2 quotes + ':' + ',' = 8
+            size_t entryEst = 8;
+            switch (_values[i].type)
+            {
+            case ZValueType::STRING:
+                // Worst-case JSON escaping: a control char expands to \uXXXX
+                // (6 bytes), so bound by 6x length + 2 quotes.
+                entryEst += 6 * _values[i].strVal.length() + 2;
+                break;
+            case ZValueType::FLOAT:
+                entryEst += 16;
+                break;
+            default: // INT / BOOL
+                entryEst += 12;
+                break;
+            }
+
+            // Flush before this key if it would overflow the chunk (but always
+            // take at least one key so a single large entry still gets sent).
+            if (added > 0 && est + entryEst > maxBytes)
+                break;
+
+            char keyBuf[8];
+            snprintf(keyBuf, sizeof(keyBuf), "Z%d", (int)i);
+            switch (_values[i].type)
+            {
+            case ZValueType::INT:
+                doc[String(keyBuf)] = _values[i].intVal;
+                break;
+            case ZValueType::FLOAT:
+                doc[String(keyBuf)] = _values[i].floatVal;
+                break;
+            case ZValueType::STRING:
+                doc[String(keyBuf)] = _values[i].strVal;
+                break;
+            case ZValueType::BOOL:
+                doc[String(keyBuf)] = _values[i].boolVal;
+                break;
+            default:
+                break;
+            }
+
+            est += entryEst;
+            added++;
+            cursor++;
+        }
+
+        return added;
+    }
+
     String ZKeyBuffer::buildJson() const
     {
         JsonDocument doc;

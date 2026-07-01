@@ -11,7 +11,7 @@ WiFi captive-portal provisioning · MQTT · OTA · Modbus · ZSignals · Alarms 
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Arduino](https://img.shields.io/badge/Arduino-Library%20Manager-00979D.svg?logo=arduino)](https://www.arduino.cc/reference/en/libraries/)
 [![PlatformIO](https://img.shields.io/badge/PlatformIO-Registry-FF7F00.svg?logo=platformio)](https://platformio.org/lib)
-[![Examples](https://img.shields.io/badge/examples-44-success.svg)](#bộ-44-examples)
+[![Examples](https://img.shields.io/badge/examples-31-success.svg)](#bộ-31-examples)
 
 ### Tải app điều khiển ZenoPCB
 
@@ -54,7 +54,7 @@ void loop() { zeno.loop(); }
 - **Broker built-in** — không cần khai báo `.mqtt(...)` cho luồng cơ bản; thư viện kết nối thẳng tới ZenoPCB Cloud broker. Tự khai broker chỉ cần thiết khi self-host.
 - **Zero external deps** — ArduinoJson, PubSubClient, TinyGSM, Preferences, FlashStorage, StreamDebugger đều đã vendor trong [src/vendor/](src/vendor/).
 - **HAL layer** — mọi truy cập phần cứng đi qua [`IZenoHal`](src/hal/IZenoHal.h). Port nền tảng mới chỉ cần hiện thực 5 interface con.
-- **44 examples sẵn sàng chạy** — xem [bộ examples](#bộ-44-examples) bên dưới.
+- **31 examples sẵn sàng chạy** — xem [bộ examples](#bộ-31-examples) bên dưới.
 
 ## Nền tảng hỗ trợ
 
@@ -66,7 +66,7 @@ void loop() { zeno.loop(); }
 | STM32 Nucleo-F429ZI | `STM32F4` | [Stm32Hal](src/hal/stm32/) | `modbus/`, `network/`, `irrigation/` |
 | STM32 Blue Pill F103 | `STM32F1` | [Stm32Hal](src/hal/stm32/) | `modbus/`, `network/`, `irrigation/`, `alarm/`, `schedule/` (profile MICRO_BASIC) |
 
-> **Capability probe:** `IZenoHal::capabilities()` trả bitmask cho từng tính năng (OTA, captive portal, TLS…). Các hàm có khả năng vắng mặt trên một số nền tảng (vd. `Zeno::ota()`, `Zeno::wifiProvisioning(apSsid, apPwd)`) trả `ZenoCapability::OK / Unavailable / Error` để caller có thể fail-safe. Xem [examples/patterns/04_capability_matrix/](examples/patterns/04_capability_matrix/).
+> **Capability probe:** `IZenoHal::capabilities()` trả bitmask cho từng tính năng (OTA, captive portal, TLS…). Các hàm có khả năng vắng mặt trên một số nền tảng (vd. `Zeno::ota()`, `Zeno::wifiProvisioning(apSsid, apPwd)`) trả `ZenoCapability::OK / Unavailable / Error` để caller có thể fail-safe.
 
 ## Cài đặt
 
@@ -142,98 +142,86 @@ void setup() {
 void loop() { zeno.loop(); }
 ```
 
-## Bộ 44 examples
+## Bộ 31 examples
 
-44 sketch chạy được trên tất cả 5 nền tảng (trừ khi note rõ), chia thành 10 nhóm theo level:
-🟢 Beginner · 🟡 Intermediate · 🔴 Advanced
+31 sketch chạy được trên ESP32 / ESP8266 / STM32 (F429 + F103), chia thành 10 nhóm.
 
-### 🔌 IO — [examples/io/](examples/io/)
-| # | Sketch | Level | Mô tả |
-|---|---|---|---|
-| 00 | [hello_zsignals](examples/io/00_hello_zsignals/) | 🟢 | Hello-world: 1 analog sensor + 1 digital actuator qua ZSignal Z0/Z1 |
-| 01 | [blink_led](examples/io/01_blink_led/) | 🟢 | Nháy LED built-in + publish trạng thái lên Z0 |
-| 02 | [button_read](examples/io/02_button_read/) | 🟢 | Đọc nút bấm + publish lên Z0 |
-| 03 | [button_debounce](examples/io/03_button_debounce/) | 🟡 | Chống dội nút bấm (software debounce) |
-| 04 | [digital_input_output](examples/io/04_digital_input_output/) | 🟢 | Map nhiều digital IO sang ZSignals |
-| 05 | [analog_read](examples/io/05_analog_read/) | 🟢 | Đọc ADC chuẩn hoá theo bit-depth từng board |
-| 06 | [pwm_output](examples/io/06_pwm_output/) | 🟡 | Điều khiển PWM (LED dimming, fan speed) từ cloud |
-| 07 | [multi_button_state](examples/io/07_multi_button_state/) | 🟡 | State machine với nhiều nút bấm |
+> **Lưu ý UNO R4 WiFi:** phần lớn example log bằng `Serial.printf()`, mà core Renesas của UNO R4 không cung cấp (`class UART` không có `printf`) — nên các sketch này **không compile được trên UNO R4 as-is**. Đây chỉ là giới hạn logging của example; core thư viện vẫn hỗ trợ UNO R4 đầy đủ. Muốn chạy trên UNO R4: đổi `Serial.printf(...)` sang `Serial.print(...)` / `Serial.println(...)`. Hai example compile sẵn trên UNO R4: [io/00_hello_zsignals](examples/io/00_hello_zsignals/) và [maintenance/02_diagnostics](examples/maintenance/02_diagnostics/).
 
-### 📡 Sensors — [examples/sensors/](examples/sensors/)
-| # | Sketch | Level | Mô tả |
-|---|---|---|---|
-| 01 | [dht22_temp_humidity](examples/sensors/01_dht22_temp_humidity/) | 🟢 | Nhiệt độ + độ ẩm DHT22 → Z0/Z1 |
-| 02 | [pir_motion_detect](examples/sensors/02_pir_motion_detect/) | 🟢 | Phát hiện chuyển động PIR + cloud alert |
-| 03 | [ultrasonic_distance](examples/sensors/03_ultrasonic_distance/) | 🟡 | Đo khoảng cách HC-SR04 |
-| 04 | [ldr_light_sensor](examples/sensors/04_ldr_light_sensor/) | 🟢 | Cảm biến ánh sáng LDR |
-| 05 | [dallas_ds18b20](examples/sensors/05_dallas_ds18b20/) | 🟡 | DS18B20 OneWire, hỗ trợ nhiều cảm biến trên 1 bus |
-| 06 | [soil_moisture](examples/sensors/06_soil_moisture/) | 🟢 | Cảm biến độ ẩm đất (capacitive/resistive) |
+### IO — [examples/io/](examples/io/)
+| # | Sketch | Mô tả |
+|---|---|---|
+| 00 | [hello_zsignals](examples/io/00_hello_zsignals/) | Hello-world: 1 analog sensor + 1 digital actuator qua ZSignal Z0/Z1 |
+| 01 | [digital_input_output](examples/io/01_digital_input_output/) | Map nhiều digital IO sang ZSignals |
+| 02 | [analog_read](examples/io/02_analog_read/) | Đọc ADC chuẩn hoá theo bit-depth từng board |
+| 03 | [pwm_output](examples/io/03_pwm_output/) | Điều khiển PWM (LED dimming, fan speed) từ cloud |
 
-### ⚙️ Actuation — [examples/actuation/](examples/actuation/)
-| # | Sketch | Level | Mô tả |
-|---|---|---|---|
-| 01 | [relay_single](examples/actuation/01_relay_single/) | 🟢 | Relay 1 kênh điều khiển từ cloud |
-| 02 | [relay_4ch](examples/actuation/02_relay_4ch/) | 🟡 | Module relay 4 kênh trên Z0..Z3 |
-| 03 | [servo_position](examples/actuation/03_servo_position/) | 🟡 | Servo PWM, vị trí 0-180° từ Z0 |
-| 04 | [dc_motor](examples/actuation/04_dc_motor/) | 🟡 | Driver L298N, tốc độ + chiều quay |
-| 05 | [solenoid_valve](examples/actuation/05_solenoid_valve/) | 🟡 | Van điện từ thuỷ lực + back-EMF protection |
+### Sensors — [examples/sensors/](examples/sensors/)
+| # | Sketch | Mô tả |
+|---|---|---|
+| 01 | [dht22_temp_humidity](examples/sensors/01_dht22_temp_humidity/) | Nhiệt độ + độ ẩm DHT22 → Z0/Z1 |
+| 02 | [pir_motion_detect](examples/sensors/02_pir_motion_detect/) | Phát hiện chuyển động PIR + cloud alert |
+| 03 | [ultrasonic_distance](examples/sensors/03_ultrasonic_distance/) | Đo khoảng cách HC-SR04 |
+| 04 | [dallas_ds18b20](examples/sensors/04_dallas_ds18b20/) | DS18B20 OneWire, hỗ trợ nhiều cảm biến trên 1 bus |
+| 05 | [soil_moisture](examples/sensors/05_soil_moisture/) | Cảm biến độ ẩm đất (capacitive/resistive) |
 
-### 🌐 Connectivity — [examples/connectivity/](examples/connectivity/)
-| # | Sketch | Level | Mô tả |
-|---|---|---|---|
-| 01 | [wifi_basic](examples/connectivity/01_wifi_basic/) | 🟢 | Kết nối WiFi tĩnh (không captive-portal) |
-| 02 | [ethernet_w5500](examples/connectivity/02_ethernet_w5500/) | 🟡 | W5500 SPI (ESP32) + Nucleo-F429 RMII (STM32). Cần `-DZENOPCB_ENABLE_ETHERNET` |
-| 03 | [4g_sim7600](examples/connectivity/03_4g_sim7600/) | 🔴 | SIM7600 4G/LTE qua TinyGSM. Cần `-DZENOPCB_ENABLE_CELLULAR` |
-| 04 | [multi_failover](examples/connectivity/04_multi_failover/) | 🔴 | Failover tự động WiFi → Ethernet → 4G |
+### Actuation — [examples/actuation/](examples/actuation/)
+| # | Sketch | Mô tả |
+|---|---|---|
+| 01 | [relay_single](examples/actuation/01_relay_single/) | Relay 1 kênh điều khiển từ cloud |
+| 02 | [servo_position](examples/actuation/02_servo_position/) | Servo PWM, vị trí 0-180° từ Z0 |
+| 03 | [dc_motor](examples/actuation/03_dc_motor/) | Driver L298N, tốc độ + chiều quay |
 
-### 📞 Communication — [examples/communication/](examples/communication/)
-| # | Sketch | Level | Mô tả |
-|---|---|---|---|
-| 01 | [modbus_rtu_read_register](examples/communication/01_modbus_rtu_read_register/) | 🟡 | Modbus RTU master, đọc holding register |
-| 02 | [modbus_rtu_write_coil](examples/communication/02_modbus_rtu_write_coil/) | 🟡 | Modbus RTU master, ghi coil |
-| 03 | [i2c_device_scanner](examples/communication/03_i2c_device_scanner/) | 🟢 | Quét địa chỉ I2C, publish danh sách lên Z0 |
-| 04 | [serial_passthrough](examples/communication/04_serial_passthrough/) | 🟡 | Cầu Serial bridging cho debug peripheral |
+### Connectivity — [examples/connectivity/](examples/connectivity/)
+| # | Sketch | Mô tả |
+|---|---|---|
+| 01 | [wifi_basic](examples/connectivity/01_wifi_basic/) | Kết nối WiFi tĩnh (không captive-portal) |
+| 02 | [ethernet_w5500](examples/connectivity/02_ethernet_w5500/) | W5500 SPI (ESP32) + Nucleo-F429 RMII (STM32). Cần `-DZENOPCB_ENABLE_ETHERNET` |
+| 03 | [4g_sim7600](examples/connectivity/03_4g_sim7600/) | SIM7600 4G/LTE qua TinyGSM. Cần `-DZENOPCB_ENABLE_CELLULAR` |
+| 04 | [multi_failover](examples/connectivity/04_multi_failover/) | Failover tự động WiFi → Ethernet → 4G |
 
-### 📺 Display — [examples/display/](examples/display/)
-| # | Sketch | Level | Mô tả |
-|---|---|---|---|
-| 01 | [lcd_i2c_16x2](examples/display/01_lcd_i2c_16x2/) | 🟢 | LCD 16×2 qua PCF8574 I2C |
-| 02 | [oled_ssd1306](examples/display/02_oled_ssd1306/) | 🟡 | OLED 0.96" SSD1306, hiển thị ZSignal real-time |
-| 03 | [seven_segment_4digit](examples/display/03_seven_segment_4digit/) | 🟡 | 7-segment TM1637 4 digit |
+### Communication — [examples/communication/](examples/communication/)
+| # | Sketch | Mô tả |
+|---|---|---|
+| 01 | [modbus_rtu_read_register](examples/communication/01_modbus_rtu_read_register/) | Modbus RTU master, đọc holding register |
+| 02 | [modbus_rtu_write_coil](examples/communication/02_modbus_rtu_write_coil/) | Modbus RTU master, ghi coil |
+| 03 | [i2c_device_scanner](examples/communication/03_i2c_device_scanner/) | Quét địa chỉ I2C, publish danh sách lên Z0 |
+| 04 | [serial_passthrough](examples/communication/04_serial_passthrough/) | Cầu Serial bridging cho debug peripheral |
 
-### 🚨 Alarm — [examples/alarm/](examples/alarm/)
+### Display — [examples/display/](examples/display/)
+| # | Sketch | Mô tả |
+|---|---|---|
+| 01 | [lcd_i2c_16x2](examples/display/01_lcd_i2c_16x2/) | LCD 16×2 qua PCF8574 I2C |
+| 02 | [oled_ssd1306](examples/display/02_oled_ssd1306/) | OLED 0.96" SSD1306, hiển thị ZSignal real-time |
+
+### Alarm — [examples/alarm/](examples/alarm/)
 > Yêu cầu Alarm Engine (không có trên STM32F103 MICRO_BASIC).
 
-| # | Sketch | Level | Mô tả |
-|---|---|---|---|
-| 01 | [threshold_high](examples/alarm/01_threshold_high/) | 🟢 | Cloud rule `Z2 > 80` → LED on |
-| 02 | [threshold_range](examples/alarm/02_threshold_range/) | 🟡 | Khoảng hợp lệ `20 ≤ Z2 ≤ 80` |
-| 03 | [buzzer_alarm](examples/alarm/03_buzzer_alarm/) | 🟡 | Buzzer cảnh báo với pattern beep |
-| 04 | [alarm_cooldown](examples/alarm/04_alarm_cooldown/) | 🟡 | Per-rule cooldown chống spam notification |
+| # | Sketch | Mô tả |
+|---|---|---|
+| 01 | [threshold_high](examples/alarm/01_threshold_high/) | Cloud rule `Z2 > 80` → LED on |
+| 02 | [alarm_cooldown](examples/alarm/02_alarm_cooldown/) | Per-rule cooldown chống spam notification |
 
-### ⏰ Scheduling — [examples/scheduling/](examples/scheduling/)
+### Scheduling — [examples/scheduling/](examples/scheduling/)
 > Yêu cầu Schedule subsystem + NTP (không có trên STM32F103 MICRO_BASIC).
 
-| # | Sketch | Level | Mô tả |
-|---|---|---|---|
-| 01 | [simple_timer](examples/scheduling/01_simple_timer/) | 🟢 | Timer millis-based, hoạt động trên F103 |
-| 02 | [daily_schedule](examples/scheduling/02_daily_schedule/) | 🟡 | Relay ON 06:00, OFF 18:00 mỗi ngày (cloud-synced) |
-| 03 | [cron_pattern](examples/scheduling/03_cron_pattern/) | 🔴 | Lịch dạng cron cho recurring task |
-| 04 | [countdown_action](examples/scheduling/04_countdown_action/) | 🟡 | Đếm ngược kích hoạt action (vd. tắt thiết bị sau N phút) |
+| # | Sketch | Mô tả |
+|---|---|---|
+| 01 | [simple_timer](examples/scheduling/01_simple_timer/) | Timer millis-based, hoạt động trên F103 |
+| 02 | [daily_schedule](examples/scheduling/02_daily_schedule/) | Relay ON 06:00, OFF 18:00 mỗi ngày (cloud-synced) |
+| 03 | [countdown_action](examples/scheduling/03_countdown_action/) | Đếm ngược kích hoạt action (vd. tắt thiết bị sau N phút) |
 
-### 🔧 Maintenance — [examples/maintenance/](examples/maintenance/)
-| # | Sketch | Level | Mô tả |
-|---|---|---|---|
-| 01 | [ota_basic](examples/maintenance/01_ota_basic/) | 🟡 | OTA firmware update qua MQTT trigger (ESP32; opt-in cho UNO R4 và STM32) |
-| 02 | [diagnostics](examples/maintenance/02_diagnostics/) | 🟡 | Báo cáo RSSI / heap / uptime mỗi 10 phút |
+### Maintenance — [examples/maintenance/](examples/maintenance/)
+| # | Sketch | Mô tả |
+|---|---|---|
+| 01 | [ota_basic](examples/maintenance/01_ota_basic/) | OTA firmware update qua MQTT trigger (ESP32; opt-in cho UNO R4 và STM32) |
+| 02 | [diagnostics](examples/maintenance/02_diagnostics/) | Báo cáo RSSI / heap / uptime mỗi 10 phút |
 
-### 🧠 Patterns — [examples/patterns/](examples/patterns/)
-| # | Sketch | Level | Mô tả |
-|---|---|---|---|
-| 01 | [state_machine_led](examples/patterns/01_state_machine_led/) | 🟡 | State machine FSM điều khiển LED multi-state |
-| 02 | [multi_zsignal_aggregator](examples/patterns/02_multi_zsignal_aggregator/) | 🟡 | 5 kênh ADC → Z0..Z4 + JSON tổng hợp Z5 |
-| 03 | [debounced_button_zsignal](examples/patterns/03_debounced_button_zsignal/) | 🟡 | Nút bấm debounce → ZSignal toggle |
-| 04 | [capability_matrix](examples/patterns/04_capability_matrix/) | 🔴 | Runtime probe `hal().capabilities()`, kiểm tra tính năng cho từng port |
+### Patterns — [examples/patterns/](examples/patterns/)
+| # | Sketch | Mô tả |
+|---|---|---|
+| 01 | [state_machine_led](examples/patterns/01_state_machine_led/) | State machine FSM điều khiển LED multi-state |
+| 02 | [debounced_button_zsignal](examples/patterns/02_debounced_button_zsignal/) | Nút bấm debounce → ZSignal toggle |
 
 ## ZSignals — kênh dữ liệu tuỳ biến (Z0–Z254)
 
@@ -331,7 +319,7 @@ zenopcb-iot-platform/
 │   ├── diagnostics/                # Periodic diagnostics reporting
 │   ├── ota/                        # HTTP OTA + rollback
 │   └── vendor/                     # ArduinoJson, PubSubClient, TinyGSM, Preferences, FlashStorage, StreamDebugger
-├── examples/                       # 44 sketches, 10 nhóm
+├── examples/                       # 31 sketches, 10 nhóm
 │   ├── io/                         # 8 sketches (00..07)
 │   ├── sensors/                    # 6 sketches
 │   ├── actuation/                  # 5 sketches

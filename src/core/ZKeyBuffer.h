@@ -100,6 +100,22 @@ namespace ZenoPCB
         uint16_t mergeAllIntoJson(JsonDocument &doc) const;
 
         /**
+         * @brief Merge a size-bounded chunk of dirty keys into a JsonDocument.
+         *
+         * Scans forward from *cursor, adding dirty keys until the estimated
+         * serialized size would exceed maxBytes (or the buffer is exhausted).
+         * The first dirty key is always added. Advances cursor past the keys
+         * consumed so repeated calls walk the whole buffer in bounded chunks
+         * without ever materialising the full 255-key document.
+         *
+         * @param doc      JsonDocument to merge into
+         * @param cursor   In/out scan position (start at 0; carried across calls)
+         * @param maxBytes Soft cap on the chunk's serialized size
+         * @return Number of keys added in this chunk (0 = no dirty keys left)
+         */
+        uint16_t mergeDirtyChunk(JsonDocument &doc, uint16_t &cursor, size_t maxBytes) const;
+
+        /**
          * @brief Build standalone JSON string with only Z keys
          * @return JSON string like {"Z0": 25.5, "Z1": "ON"}
          */

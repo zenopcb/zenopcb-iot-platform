@@ -1,5 +1,5 @@
 /**
- * @file 04_alarm_cooldown.ino
+ * @file 02_alarm_cooldown.ino
  * @brief Rate-limit an alarm-triggered actuator: ignore further trips for
  *        60 seconds after firing.
  *
