@@ -1,6 +1,6 @@
 {
   "name": "ZenoPCB",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Declarative IoT library for ESP32, ESP8266, UNO R4 WiFi and STM32. v0.4.0 introduces self-registering ZSignal macros (DEVICE_TO_CLOUD, CLOUD_TO_DEVICE, ZENO_EVERY) so user sketches stay flat — setup() is just `wifi().device().begin()`. Includes WiFi captive-portal provisioning, MQTT (optional TLS), HTTP OTA, Modbus RTU/TCP, ZSignals telemetry/control, edge alarms, schedules, irrigation and diagnostics — single-include, no external dependencies (ArduinoJson, PubSubClient, TinyGSM, Preferences, FlashStorage, StreamDebugger are vendored).",
   "keywords": "iot, esp32, esp8266, uno-r4, stm32, mqtt, wifi, provisioning, captive-portal, ota, modbus, alarm, schedule, irrigation, diagnostics, zsignals, declarative, zenopcb",
   "repository": {
